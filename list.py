@@ -9,7 +9,11 @@ class List:
         self.head = None
 
 
-    def insert(self, elem): # C
+    def insert(self, index, elem):
+        pass
+    
+    
+    def push(self, elem): # C
         new_elem = Node(None, elem) # инициализация нового узла
 
         if self.head is None: # если указатель на начало списка None, то мы просто добавляем первый (нулевой по индексу) узел в список
@@ -23,7 +27,20 @@ class List:
 
         curr_elem.next = new_elem # после цикла указатель текущего узла указывает на None, и мы просто сцепляем этот указатель на новый узел
     
+
+    def raise_exception_oob(self, index):
+        raise Exception(f"Index {index} is out of bound! List length: {self.length()}")
+
     def find_node(self, index):
+        """
+        индекс [0; length)
+
+        постусловие: возвращает не None
+        """
+
+        if index > self.length() - 1 or index < 0: # проверка на валидность введенного индекса
+            self.raise_exception_oob(index)
+
         curr_elem = self.head
         
         count = 0
@@ -34,12 +51,11 @@ class List:
 
         return curr_elem
 
-
-
-    def get(self, index): # R
-        if index > self.length() - 1: # проверка на валидность введенного индекса
-            raise Exception(f"Index {index} is out of bound! List length: {self.length()}")
-
+    # индекс: [0; length)
+    def get(self, index: int): # R
+        """
+        индекс: [0; length)
+        """
         # count = 0
 
         # # Цикл №1
@@ -65,79 +81,85 @@ class List:
         
         return count
     
+    # индекс: [0; length), элемент: any
+    def set(self, index, elem): # U 
+        # curr_elem = self.head # текущий элемент равен первому узлу списка
 
-    def set(self, index, elem): # U
-        if index > self.length() - 1: # проверка на валидность введенного индекса
-            raise Exception(f"Index {index} is out of bound! List length: {self.length()}")
+        # count = 0
 
-        curr_elem = self.head # текущий элемент равен первому узлу списка
-
-        count = 0
-
-        # Цикл №2
-        while count < index: # идём до нужного индекса: если 0, то в цикл не входим; если 1 и более, то входим минимум один раз
-            curr_elem = curr_elem.next
-            count += 1
+        # # Цикл №2
+        # while count < index: # идём до нужного индекса: если 0, то в цикл не входим; если 1 и более, то входим минимум один раз
+        #     curr_elem = curr_elem.next
+        #     count += 1
         
-        curr_elem.elem = elem # возвращаем элемент
+        # curr_elem.elem = elem # возвращаем элемент
+        self.find_node(index).elem = elem
 
-
+    # индекс: [0; length)
     def remove(self, index): # D
         # 1) List( head = None )any Node.remove() ---> Error! | пустой список
 
         # 2) List( head = Node №1.remove -> Node №2 -> ... -> None) | удаление элемента по индексу 0
 
         # 3) List( head = Node№1 -> ... -> Node №N - 1 -> Node №N.remove -> Node №N + 1... -> None ).remove(index = [0; self.length() - 1]) --> Ok! | общий случай
-        # 4) List( head = Node №1 -> Node №2.remove -> Node №3 -> Node №4 -> None)
-        #          index     0             1               2          3
+        # 4) List( head = Node №1 -> Node №2 -> Node №3 -> Node №4.remove -> None)
+        #          index     0             1         2           3
 
 
         len = self.length() # получаем длину списка
 
-        if index > len - 1 or len == 0: # случай, если индекс за пределами длины списка или у нас пустой список
+        if index >= len or len == 0: # случай, если индекс за пределами длины списка или у нас пустой список
             raise Exception(f"Index {index} is out of bound! List length: {self.length()}")
         
         if index == 0: # если нужно удалить первый элемент, то необходимо просто передвинуть указатель на первый узел на следующий узел
-            self.head = self.head.next
+            self.head = self.head.next # None.next
             return
 
         # curr_elem = self.head # текущий элемент равен первому узлу списка
 
         # count = 0
 
-        # # Цикл №3(?)
+        # Цикл №3(?)
         # while count < index - 1: # пока не дойдем до индекса элемента, ПРЕДШЕСТВУЮЩЕГО удаляемому
         #     curr_elem = curr_elem.next
         #     count += 1
 
-        curr_elem.next = curr_elem.next.next # указатель текущего узла на следующий узел равен двойному шагу по связи текущего узла 
+        correct_node = self.find_node(index - 1)
+
+        correct_node.next = correct_node.next.next # указатель текущего узла на следующий узел равен двойному шагу по связи текущего узла 
         #                                               (удалённый элемент наверное сам удаляется из памяти)
     
 
     def print(self):
-        if self.head is None: # если указатель на начало списка None, то в списке ноль узлов - он пустой
-            print(f"[]")
-            return
+        print(str(self))
 
-        curr_elem = self.head # текущий элемент равен первому узлу списка
-        print(f"[{curr_elem.elem}", end='') # печатаем его
 
-        while curr_elem.next: # пока указатель на следующий узел не None
-            curr_elem = curr_elem.next # переходим на следующий узел
-            print(f", {curr_elem.elem}", end='') # печатаем элемент
-        
-        print(f"]")
-
+    def __str__(self):
+        # if self.head is None: # если указатель на начало списка None, то в списке ноль узлов - он пустой
+        #     print(f"[]")
+        #     return
 
         # curr_elem = self.head # текущий элемент равен первому узлу списка
+        # print(f"[{curr_elem.elem}", end='') # печатаем его
 
-        # print(f"[", end='')
-        # while curr_elem:
-        #     print(f" {curr_elem.elem} ", end='')
-        #     curr_elem = curr_elem.next
+        # while curr_elem.next: # пока указатель на следующий узел не None
+        #     curr_elem = curr_elem.next # переходим на следующий узел
+        #     print(f", {curr_elem.elem}", end='') # печатаем элемент
+        
         # print(f"]")
-    
 
+        string = '['
+
+        curr_elem = self.head # текущий элемент равен первому узлу списка
+
+        while curr_elem:
+            string += curr_elem.elem + ', ' * (curr_elem.next != None)
+            curr_elem = curr_elem.next
+        string += ']'
+
+        return string
+    
+    # элемент: any
     def find(self, elem):
         if self.head is None: # если указатель на начало списка None, то в списке ноль узлов - он пустой
             return None
@@ -160,73 +182,114 @@ class List:
 
         return None
 
+
+    def from_array(array):
+        l = List()
+
+        for elem in array:
+            l.push(elem)
+        
+        return l
+
+
+    # other: not None
+    def __eq__(self, other: 'List'):
+        curr_elem = self.head
+
+        count = 0
+        while count < self.length():
+            if count > other.length() - 1:
+                return False
+                
+            if self.get(count) != other.get(count):
+                return False
+
+
+            curr_elem = curr_elem.next
+            count += 1
+
+        return True
+
 l = List()
 
 # Методы: insert(elem), get(index), length(), set(index, elem), remove(index), print(), find(elem)
-
-
-
-
-
-
-
-
-# -----------
-# Пустой список
-# l.print()
-
-# print(l.get(0))
-# print(l.get(1))
-
-# print(l.length())
-
-# l.set(0, 'a')
-
-# l.remove(0)
-
-# print(l.find('a'))
-# -----------
-# Список из одного элемента
-# l.insert('a')
-# l.print()
-
-# print(l.get(0))
-# # print(l.get(1))
-
-# print(l.length())
-
-# print("\nЗамена элемента:")
-# l.set(0, 'b')
-# print(l.get(0)) 
-# l.print()
-
-# print("\nУдаление элемента:")
-# l.remove(0)
-# l.print()
-
-# print("\nПоиск элемента")
-# l.insert('a')
-# l.print()
-# print(l.find('a'))
-# -----------
-# Список из множества элементов
-# l.insert('p')
-# l.insert('o')
-# l.insert('n')
-# l.insert('y')
 
 # l.print()
 
 # print("Длина:", l.length())
 
-# print(l.get(2))
+# print(l.get(0))
 
 # l.set(3, 'k')
 # l.print()
 
-# l.remove(3)
-# l.print()
+def test_remove_last_element():
+    print("test remove:")
+    l = List.from_array(['a', 'b', 'c'])
+    k = List.from_array(['a', 'b'])
+
+    l.print()
+
+    l.remove(2)
+    l.print()
+    assert l == k, f"{l.to_string()}, {k.to_string()}"
+
+def test_equals():
+    pass
+
+def test_to_string():
+    l = List()
+
+    l.push('p')
+    l.push('o')
+    l.push('n')
+    l.push('y')
+
+    actual = str(l)
+    expected = "[p, o, n, y]"
+
+    assert actual == expected
+
+
 # l.insert('y')
 # l.print()
 
 # print(l.find('y'))
+
+def test_equals_success():
+    print("test equals (success): ")
+    l = List()
+    k = List()
+
+    l.push('p')
+    l.push('o')
+    l.push('n')
+    l.push('k')
+
+    k.push('p')
+    k.push('o')
+    k.push('n')
+
+    assert l == k, f'{l}, {k}'
+
+def test_equals_fail():
+    print("test equals (fail): ")
+    l = List()
+    k = List()
+
+    l.push('p')
+    l.push('o')
+    l.push('n')
+    # l.push('y')
+
+    k.push('k')
+    k.push('i')
+    k.push('j')
+
+    assert l != k
+
+
+test_remove_last_element()
+test_equals_success()
+test_equals_fail()
+test_to_string()
