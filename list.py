@@ -101,14 +101,14 @@ class List:
             self.head = self.head.next
             return
 
-        curr_elem = self.head # текущий элемент равен первому узлу списка
+        # curr_elem = self.head # текущий элемент равен первому узлу списка
 
-        count = 0
+        # count = 0
 
-        # Цикл №3(?)
-        while count < index - 1: # пока не дойдем до индекса элемента, ПРЕДШЕСТВУЮЩЕГО удаляемому
-            curr_elem = curr_elem.next
-            count += 1
+        # # Цикл №3(?)
+        # while count < index - 1: # пока не дойдем до индекса элемента, ПРЕДШЕСТВУЮЩЕГО удаляемому
+        #     curr_elem = curr_elem.next
+        #     count += 1
 
         curr_elem.next = curr_elem.next.next # указатель текущего узла на следующий узел равен двойному шагу по связи текущего узла 
         #                                               (удалённый элемент наверное сам удаляется из памяти)
