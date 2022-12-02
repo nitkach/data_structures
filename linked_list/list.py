@@ -11,6 +11,18 @@ class List:
         self.length = 0
 
 
+    # ['a', 'b', 'c'] len = 3
+    #  -3   -2   -1 | + 3 =
+    # = 0    1    2
+    def index_transform(self, index): 
+        return index + self.length if index < 0 else index
+
+
+    # [0; length) -> border = 1; [0; length] -> border = 0
+    def check_index_borders(self, index, border = 0): 
+        return index > self.length - border or index < -self.length
+
+
     def raise_exception_oob(self, index):
         raise Exception(f"Index {index} is out of bound! List length: {self.length}")
 
@@ -19,9 +31,6 @@ class List:
         '''
         valid indices: [0; list length)
         '''
-        if index >= self.length:
-            self.raise_exception_oob(index)
-
         curr_node = self.head
 
         count = 0
@@ -54,7 +63,7 @@ class List:
 
     # C
     def insert(self, index, value):
-        if index > self.length or index < -self.length:
+        if self.check_index_borders(index):
             self.raise_exception_oob(index)
 
         new_node = Node(None, value)
@@ -65,6 +74,7 @@ class List:
             self.length += 1 # length
             return
 
+        index = self.index_transform(index)
 
         # вставка на место первого элемента
         if index == 0:
@@ -80,17 +90,16 @@ class List:
             self.length += 1 # length
             return
 
+        # count = 0
 
-        prev_node = self.head
+        # prev_node = self.head
 
-        count = 0
+        # # идём до ноды, предшествующей нужной
+        # while count < index - 1:
+        #     count += 1
+        #     prev_node = prev_node.next
 
-        prev_node = self.head
-
-        # идём до ноды, предшествующей нужной
-        while count < index - 1:
-            count += 1
-            prev_node = prev_node.next
+        prev_node = self.find_node(index - 1)
 
         # связь новой ноды указывает на 
         new_node.next = prev_node.next 
@@ -100,36 +109,42 @@ class List:
 
     # R
     def get(self, index):
-        return self.find_node(index).value
+        return self.find_node(self.index_transform(index)).value
 
 
     # U
     def set(self, index, elem):
-        self.find_node(index).value = elem
+        self.find_node(self.index_transform(index)).value = elem
 
-    
+
+
+
     # D
     def remove(self, index):
-        if index >= self.length or index < -self.length:
+        if self.check_index_borders(index, border = 1):
             self.raise_exception_oob(index)
+
+        index = self.index_transform(index)
 
         if index == 0:
             self.head = self.head.next
             self.length -= 1
             return
 
-        curr_node = self.head
+        # prev_node = self.head
 
-        count = 0
+        # count = 0
 
-        while count < index - 1:
-            curr_node = curr_node.next
-            count += 1
+        # while count < index - 1:
+        #     curr_node = curr_node.next
+        #     count += 1
+
+        prev_node = self.find_node(index - 1)
 
         if index == self.length - 1:
-            self.tail = curr_node
+            self.tail = prev_node
         
-        curr_node.next = curr_node.next.next
+        prev_node.next = prev_node.next.next
         self.length -= 1
 
 
@@ -145,18 +160,6 @@ class List:
             curr_node = curr_node.next 
 
         return None
-
-
-    # def length(self):
-    #     curr_node = self.head
-
-    #     count = 0
-
-    #     while curr_node: # проверка на None
-    #         curr_node = curr_node.next 
-    #         count += 1
-
-    #     return count
 
 
     def __eq__(self, other: 'List'):
@@ -240,18 +243,26 @@ l.push('a')
 l.push('b')
 l.push('c')
 
-print('\n')
-l.print()
-print(f"len = {l.length}, tail.value = {l.tail.value}\n")
 
-l.insert(3, 'd') # написать тест для положит. индексов
-l.print()
-print(f"len = {l.length}, tail.value = {l.tail.value}\n")
+print(l)
+print(f"len = {l.length}\n")
+
+# print(l.get(-3))
+# l.set(-2, 'g')
+# l.print()
+
+# l.insert(-3, 'g') # написать тест для положит. индексов
+# l.print()
 
 l.remove(3)
-l.print()
-print(f"len = {l.length}, tail.value = {l.tail.value}\n")
 
+print(l)
+
+print(f"len = {l.length}\n")
+
+# ['a', 'b', 'c']
+#   0    1    2
+#  -3   -2   -1
 
 test_equals_success()
 test_equals_fail()
