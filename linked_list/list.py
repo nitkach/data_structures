@@ -48,7 +48,7 @@ class List:
             curr_node = curr_node.next
         
         curr_node.next = new_node
-        self.tail = new_node # tail
+        self.tail = curr_node.next # tail
         self.length += 1 # length
 
 
@@ -66,9 +66,6 @@ class List:
             return
 
 
-        prev_node = self.head
-
-
         # вставка на место первого элемента
         if index == 0:
             new_node.next = self.head
@@ -76,12 +73,15 @@ class List:
             self.length += 1 # length
             return
 
+        # вставка в конец списка
         if index == self.length: # tail
             self.tail.next = new_node
             self.tail = self.tail.next
             self.length += 1 # length
             return
 
+
+        prev_node = self.head
 
         count = 0
 
@@ -97,11 +97,6 @@ class List:
         prev_node.next = new_node
         self.length += 1
 
-        
-            
-
-
-
 
     # R
     def get(self, index):
@@ -114,7 +109,28 @@ class List:
 
     
     # D
-    #def remove(self, index):
+    def remove(self, index):
+        if index >= self.length or index < -self.length:
+            self.raise_exception_oob(index)
+
+        if index == 0:
+            self.head = self.head.next
+            self.length -= 1
+            return
+
+        curr_node = self.head
+
+        count = 0
+
+        while count < index - 1:
+            curr_node = curr_node.next
+            count += 1
+
+        if index == self.length - 1:
+            self.tail = curr_node
+        
+        curr_node.next = curr_node.next.next
+        self.length -= 1
 
 
     def find(self, value):
@@ -142,6 +158,25 @@ class List:
 
     #     return count
 
+
+    def __eq__(self, other: 'List'):
+        curr_node = self.head
+
+        count = 0
+
+        if self.length != other.length:
+            return False
+
+        while count < self.length:
+
+            if self.get(count) != other.get(count):
+                return False
+
+            curr_node = curr_node.next
+            count += 1
+
+        return True
+
     
     def __str__(self) -> str:
         string = '['
@@ -161,11 +196,50 @@ class List:
         print(str(self))
 
 
+def test_equals_success():
+    L1 = List()
+    L2 = List()
+
+    L1.push('p')
+    L1.push('o')
+    L1.push('n')
+
+    L2.push('p')
+    L2.push('o')
+    L2.push('n')
+
+    assert L1 == L2, f"{L1} == {L2}."
+
+
+def test_equals_fail():
+    L1 = List()
+    L2 = List()
+
+    L1.push('p')
+    L1.push('o')
+    L1.push('n')
+
+    L2.push('n')
+    L2.push('o')
+    L2.push('p')
+
+
+    assert L1 != L2, f"{L1} != {L2}."
+
+
+def test_insert_():
+    L1 = List()
+    L2 = List()
+    
+
+
+
 l = List()
 
 l.push('a')
 l.push('b')
 l.push('c')
+
 print('\n')
 l.print()
 print(f"len = {l.length}, tail.value = {l.tail.value}\n")
@@ -173,3 +247,11 @@ print(f"len = {l.length}, tail.value = {l.tail.value}\n")
 l.insert(3, 'd') # написать тест для положит. индексов
 l.print()
 print(f"len = {l.length}, tail.value = {l.tail.value}\n")
+
+l.remove(3)
+l.print()
+print(f"len = {l.length}, tail.value = {l.tail.value}\n")
+
+
+test_equals_success()
+test_equals_fail()
