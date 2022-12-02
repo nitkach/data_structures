@@ -8,17 +8,18 @@ class List:
     def __init__(self):
         self.head = None
         self.tail = None
+        self.length = 0
 
 
     def raise_exception_oob(self, index):
-        raise Exception(f"Index {index} is out of bound! List length: {self.length()}")
+        raise Exception(f"Index {index} is out of bound! List length: {self.length}")
 
     
     def find_node(self, index):
         '''
         valid indices: [0; list length)
         '''
-        if index >= self.length():
+        if index >= self.length:
             self.raise_exception_oob(index)
 
         curr_node = self.head
@@ -38,6 +39,7 @@ class List:
 
         if self.head == None:
             self.head = self.tail = new_node # tail
+            self.length += 1 # length
             return
 
         curr_node = self.head
@@ -47,18 +49,20 @@ class List:
         
         curr_node.next = new_node
         self.tail = new_node # tail
+        self.length += 1 # length
 
 
     # C
     def insert(self, index, value):
-        if index > self.length() or index < -self.length():
+        if index > self.length or index < -self.length:
             self.raise_exception_oob(index)
 
         new_node = Node(None, value)
 
         # пустой список
         if self.head == None:
-            self.head = new_node
+            self.head = self.tail = new_node
+            self.length += 1 # length
             return
 
 
@@ -69,6 +73,13 @@ class List:
         if index == 0:
             new_node.next = self.head
             self.head = new_node
+            self.length += 1 # length
+            return
+
+        if index == self.length: # tail
+            self.tail.next = new_node
+            self.tail = self.tail.next
+            self.length += 1 # length
             return
 
 
@@ -84,6 +95,7 @@ class List:
         # связь новой ноды указывает на 
         new_node.next = prev_node.next 
         prev_node.next = new_node
+        self.length += 1
 
         
             
@@ -119,16 +131,16 @@ class List:
         return None
 
 
-    def length(self):
-        curr_node = self.head
+    # def length(self):
+    #     curr_node = self.head
 
-        count = 0
+    #     count = 0
 
-        while curr_node: # проверка на None
-            curr_node = curr_node.next 
-            count += 1
+    #     while curr_node: # проверка на None
+    #         curr_node = curr_node.next 
+    #         count += 1
 
-        return count
+    #     return count
 
     
     def __str__(self) -> str:
@@ -154,7 +166,10 @@ l = List()
 l.push('a')
 l.push('b')
 l.push('c')
+print('\n')
 l.print()
+print(f"len = {l.length}, tail.value = {l.tail.value}\n")
 
-l.insert(0, 'd') # написать тест для положит. индексов
+l.insert(3, 'd') # написать тест для положит. индексов
 l.print()
+print(f"len = {l.length}, tail.value = {l.tail.value}\n")
