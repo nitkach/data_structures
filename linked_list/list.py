@@ -11,16 +11,79 @@ class List:
         self.length = 0
 
 
+    def __len__(self):
+        return self.length
+
+
+    def __eq__(self, other: 'List'):
+        curr_node = self.head
+
+        count = 0
+
+        if self.length != other.length:
+            return False
+
+        while count < self.length:
+
+            if self.get(count) != other.get(count):
+                return False
+
+            curr_node = curr_node.next
+            count += 1
+
+        return True
+
+    
+    def __str__(self) -> str:
+        string = '['
+
+        curr_node = self.head
+
+        while curr_node: # проверка на None
+            string += curr_node.value + ', ' * (curr_node.next != None) 
+            curr_node = curr_node.next 
+        
+        string += ']'
+
+        return string
+
+
+    def __getitem__(self, index):
+        self.check_index_borders(index)
+        return self.find_node(self.index_transform(index)).value
+
+
+    def __iter__(self):
+        self.current_index = 0
+        return self
+
+
+    def __next__(self):
+        if self.current_index < self.length:
+            current = self.get(self.current_index)
+            self.current_index += 1
+            return current
+        else:
+            raise StopIteration
+
+
+
     # ['a', 'b', 'c'] len = 3
-    #  -3   -2   -1 | + 3 =
+    #  -3   -2   -1 | + len =
     # = 0    1    2
     def index_transform(self, index): 
         return index + self.length if index < 0 else index
 
 
     # [0; length) -> border = 1; [0; length] -> border = 0
-    def check_index_borders(self, index, border = 0): 
-        return index > self.length - border or index < -self.length
+    def check_index_borders(self, index, border = 1):
+        '''
+        check index in: 
+            [-len; len): border = 1 (default)
+            [-len; len]: border = 0
+        '''
+        if index > self.length - border or index < -self.length:
+            self.raise_exception_oob(index)
 
 
     def raise_exception_oob(self, index):
@@ -63,8 +126,7 @@ class List:
 
     # C
     def insert(self, index, value):
-        if self.check_index_borders(index):
-            self.raise_exception_oob(index)
+        self.check_index_borders(index, border = 0)
 
         new_node = Node(None, value)
 
@@ -117,8 +179,6 @@ class List:
         self.find_node(self.index_transform(index)).value = elem
 
 
-
-
     # D
     def remove(self, index):
         if self.check_index_borders(index, border = 1):
@@ -161,39 +221,6 @@ class List:
 
         return None
 
-
-    def __eq__(self, other: 'List'):
-        curr_node = self.head
-
-        count = 0
-
-        if self.length != other.length:
-            return False
-
-        while count < self.length:
-
-            if self.get(count) != other.get(count):
-                return False
-
-            curr_node = curr_node.next
-            count += 1
-
-        return True
-
-    
-    def __str__(self) -> str:
-        string = '['
-
-        curr_node = self.head
-
-        while curr_node: # проверка на None
-            string += curr_node.value + ', ' * (curr_node.next != None) 
-            curr_node = curr_node.next 
-        
-        string += ']'
-
-        return string
-
     
     def print(self):
         print(str(self))
@@ -230,9 +257,11 @@ def test_equals_fail():
     assert L1 != L2, f"{L1} != {L2}."
 
 
-def test_insert_():
+def test_insert():
     L1 = List()
     L2 = List()
+
+
     
 
 
@@ -247,18 +276,12 @@ l.push('c')
 print(l)
 print(f"len = {l.length}\n")
 
-# print(l.get(-3))
-# l.set(-2, 'g')
-# l.print()
 
-# l.insert(-3, 'g') # написать тест для положит. индексов
-# l.print()
+for element in l:
+    print(f"element = {element}")
 
-l.remove(3)
-
-print(l)
-
-print(f"len = {l.length}\n")
+for i in range(-1, -len(l) - 1, -1):
+    print(f"l[{i}] = {l[i]}")
 
 # ['a', 'b', 'c']
 #   0    1    2
