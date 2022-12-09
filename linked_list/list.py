@@ -1,7 +1,25 @@
 class Node:
-    def __init__(self, next, value):
+    def __init__(self, elem, next = None):
         self.next = next
-        self.value = value
+        self.elem = elem
+
+
+class ListIterator:
+    def __init__(self, head):
+        self.current = head
+
+    
+    def __iter__(self):
+        return self
+
+
+    def __next__(self):
+        if self.current == None:
+            raise StopIteration
+
+        elem = self.current.elem
+        self.current = self.current.next
+        return elem
 
 
 class List:
@@ -25,7 +43,7 @@ class List:
 
         while count < self.length:
 
-            if self.get(count) != other.get(count):
+            if self[count] != other[count]:
                 return False
 
             curr_node = curr_node.next
@@ -40,7 +58,7 @@ class List:
         curr_node = self.head
 
         while curr_node: # проверка на None
-            string += curr_node.value + ', ' * (curr_node.next != None) 
+            string += curr_node.elem + ', ' * (curr_node.next != None) 
             curr_node = curr_node.next 
         
         string += ']'
@@ -48,34 +66,24 @@ class List:
         return string
 
 
-    def __getitem__(self, index):
+    def __getitem__(self, index) -> int | str:
         self.check_index_borders(index)
-        return self.find_node(self.index_transform(index)).value
+        return self.find_node(self.index_transform(index)).elem
 
+
+    def __setitem__(self, index, elem):
+        self.check_index_borders(index)
+        self.find_node(self.index_transform(index)).elem = elem
+        
 
     def __iter__(self):
-        self.current_index = 0
-        return self
+        return ListIterator(self.head)
 
 
-    def __next__(self):
-        if self.current_index < self.length:
-            current = self.get(self.current_index)
-            self.current_index += 1
-            return current
-        else:
-            raise StopIteration
-
-
-
-    # ['a', 'b', 'c'] len = 3
-    #  -3   -2   -1 | + len =
-    # = 0    1    2
-    def index_transform(self, index): 
+    def index_transform(self, index: int) -> int:
         return index + self.length if index < 0 else index
 
 
-    # [0; length) -> border = 1; [0; length] -> border = 0
     def check_index_borders(self, index, border = 1):
         '''
         check index in: 
@@ -90,10 +98,7 @@ class List:
         raise Exception(f"Index {index} is out of bound! List length: {self.length}")
 
     
-    def find_node(self, index):
-        '''
-        valid indices: [0; list length)
-        '''
+    def find_node(self, index) -> Node:
         curr_node = self.head
 
         count = 0
@@ -106,33 +111,17 @@ class List:
 
 
     # C
-    def push(self, value):
-        new_node = Node(None, value)
-
-        if self.head == None:
-            self.head = self.tail = new_node # tail
-            self.length += 1 # length
-            return
-
-        curr_node = self.head
-        
-        while curr_node.next:
-            curr_node = curr_node.next
-        
-        curr_node.next = new_node
-        self.tail = curr_node.next # tail
-        self.length += 1 # length
+    def push(self, elem):
+        self.insert(self.length, elem)
 
 
     # C
-    def insert(self, index, value):
+    def insert(self, index, elem):
         self.check_index_borders(index, border = 0)
-
-        new_node = Node(None, value)
 
         # пустой список
         if self.head == None:
-            self.head = self.tail = new_node
+            self.head = self.tail = Node(elem)
             self.length += 1 # length
             return
 
@@ -140,43 +129,20 @@ class List:
 
         # вставка на место первого элемента
         if index == 0:
-            new_node.next = self.head
-            self.head = new_node
+            self.head = Node(elem, self.head)
             self.length += 1 # length
             return
 
         # вставка в конец списка
         if index == self.length: # tail
-            self.tail.next = new_node
+            self.tail.next = Node(elem)
             self.tail = self.tail.next
             self.length += 1 # length
             return
 
-        # count = 0
-
-        # prev_node = self.head
-
-        # # идём до ноды, предшествующей нужной
-        # while count < index - 1:
-        #     count += 1
-        #     prev_node = prev_node.next
-
         prev_node = self.find_node(index - 1)
-
-        # связь новой ноды указывает на 
-        new_node.next = prev_node.next 
-        prev_node.next = new_node
+        prev_node.next = Node(elem, prev_node.next)
         self.length += 1
-
-
-    # R
-    def get(self, index):
-        return self.find_node(self.index_transform(index)).value
-
-
-    # U
-    def set(self, index, elem):
-        self.find_node(self.index_transform(index)).value = elem
 
 
     # D
@@ -191,14 +157,6 @@ class List:
             self.length -= 1
             return
 
-        # prev_node = self.head
-
-        # count = 0
-
-        # while count < index - 1:
-        #     curr_node = curr_node.next
-        #     count += 1
-
         prev_node = self.find_node(index - 1)
 
         if index == self.length - 1:
@@ -208,13 +166,17 @@ class List:
         self.length -= 1
 
 
-    def find(self, value):
+    def length(self) -> int:
+        return self.length
+
+
+    def find(self, elem) -> int | None:
         curr_node = self.head
 
         count = 0
 
         while curr_node: # проверка на None
-            if curr_node.value == value: 
+            if curr_node.elem == elem: 
                 return count
             count += 1
             curr_node = curr_node.next 
@@ -225,57 +187,32 @@ class List:
     def print(self):
         print(str(self))
 
-
-def test_equals_success():
-    L1 = List()
-    L2 = List()
-
-    L1.push('p')
-    L1.push('o')
-    L1.push('n')
-
-    L2.push('p')
-    L2.push('o')
-    L2.push('n')
-
-    assert L1 == L2, f"{L1} == {L2}."
-
-
-def test_equals_fail():
-    L1 = List()
-    L2 = List()
-
-    L1.push('p')
-    L1.push('o')
-    L1.push('n')
-
-    L2.push('n')
-    L2.push('o')
-    L2.push('p')
-
-
-    assert L1 != L2, f"{L1} != {L2}."
-
-
-def test_insert():
-    L1 = List()
-    L2 = List()
-
-
     
+    def from_array(array):
+        l = List()
+
+        for elem in array:
+            l.push(elem)
+
+        return l
 
 
+l = List.from_array(['a', 'b', 'c', 'd'])
 
-l = List()
-
+print(l.length)
 l.push('a')
 l.push('b')
 l.push('c')
 
-
 print(l)
 print(f"len = {l.length}\n")
 
+l.insert(-3, 'd')
+
+print(l)
+
+for element in l:
+    print(f"element = {element}")
 
 for element in l:
     print(f"element = {element}")
@@ -283,9 +220,7 @@ for element in l:
 for i in range(-1, -len(l) - 1, -1):
     print(f"l[{i}] = {l[i]}")
 
+
 # ['a', 'b', 'c']
 #   0    1    2
 #  -3   -2   -1
-
-test_equals_success()
-test_equals_fail()
