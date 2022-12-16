@@ -66,9 +66,15 @@ class List:
         return string
 
 
-    def __getitem__(self, index) -> int | str:
+    def __getitem__(self, index):
         self.check_index_borders(index)
-        return self.find_node(self.index_transform(index)).elem
+        index = self.index_transform(index)
+
+        count = 0
+        for elem in self:
+            if count == index:
+                return elem
+            count += 1
 
 
     def __setitem__(self, index, elem):
@@ -119,7 +125,7 @@ class List:
     def insert(self, index, elem):
         self.check_index_borders(index, border = 0)
 
-        # пустой список
+        # empty list
         if self.head == None:
             self.head = self.tail = Node(elem)
             self.length += 1 # length
@@ -127,13 +133,13 @@ class List:
 
         index = self.index_transform(index)
 
-        # вставка на место первого элемента
+        # insert first element
         if index == 0:
             self.head = Node(elem, self.head)
             self.length += 1 # length
             return
 
-        # вставка в конец списка
+        # insert in tail
         if index == self.length: # tail
             self.tail.next = Node(elem)
             self.tail = self.tail.next
@@ -175,7 +181,7 @@ class List:
 
         count = 0
 
-        while curr_node: # проверка на None
+        while curr_node: # check for None
             if curr_node.elem == elem: 
                 return count
             count += 1
@@ -200,9 +206,6 @@ class List:
 l = List.from_array(['a', 'b', 'c', 'd'])
 
 print(l.length)
-l.push('a')
-l.push('b')
-l.push('c')
 
 print(l)
 print(f"len = {l.length}\n")
@@ -214,13 +217,8 @@ print(l)
 for element in l:
     print(f"element = {element}")
 
-for element in l:
-    print(f"element = {element}")
+for i in range(len(l)):
+    print(f"l[{i}] = {l[i]}")
 
 for i in range(-1, -len(l) - 1, -1):
     print(f"l[{i}] = {l[i]}")
-
-
-# ['a', 'b', 'c']
-#   0    1    2
-#  -3   -2   -1
