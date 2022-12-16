@@ -1,7 +1,7 @@
 class Node:
     def __init__(self, elem, next = None):
-        self.next = next
         self.elem = elem
+        self.next = next
 
 
 class ListIterator:
@@ -87,6 +87,9 @@ class List:
 
 
     def index_transform(self, index: int) -> int:
+        '''
+        Transform negative indices to correct positive value
+        '''
         return index + self.length if index < 0 else index
 
 
@@ -105,6 +108,9 @@ class List:
 
     
     def find_node(self, index) -> Node:
+        '''
+        Find node by index
+        '''
         curr_node = self.head
 
         count = 0
@@ -118,11 +124,17 @@ class List:
 
     # C
     def push(self, elem):
+        '''
+        Add element to tail list
+        '''
         self.insert(self.length, elem)
 
 
     # C
     def insert(self, index, elem):
+        '''
+        Insert element in list by moving to right all element standing on the right
+        '''
         self.check_index_borders(index, border = 0)
 
         # empty list
@@ -153,6 +165,9 @@ class List:
 
     # D
     def remove(self, index):
+        '''
+        Remove element by index
+        '''
         if self.check_index_borders(index, border = 1):
             self.raise_exception_oob(index)
 
@@ -177,6 +192,9 @@ class List:
 
 
     def find(self, elem) -> int | None:
+        '''
+        Try to find element in list
+        '''
         curr_node = self.head
 
         count = 0
@@ -191,10 +209,16 @@ class List:
 
     
     def print(self):
+        '''
+        Print list
+        '''
         print(str(self))
 
     
     def from_array(array):
+        '''
+        Move element from array to list
+        '''
         l = List()
 
         for elem in array:
@@ -203,22 +227,22 @@ class List:
         return l
 
 
-l = List.from_array(['a', 'b', 'c', 'd'])
+# l = List.from_array(['a', 'b', 'c', 'd'])
 
-print(l.length)
+# print(l.length)
 
-print(l)
-print(f"len = {l.length}\n")
+# print(l)
+# print(f"len = {l.length}\n")
 
-l.insert(-3, 'd')
+# l.insert(-3, 'd')
 
-print(l)
+# print(l)
 
-for element in l:
-    print(f"element = {element}")
+# for element in l:
+#     print(f"element = {element}")
 
-for i in range(len(l)):
-    print(f"l[{i}] = {l[i]}")
+# for i in range(len(l)):
+#     print(f"l[{i}] = {l[i]}")
 
-for i in range(-1, -len(l) - 1, -1):
-    print(f"l[{i}] = {l[i]}")
+# for i in range(-1, -len(l) - 1, -1):
+#     print(f"l[{i}] = {l[i]}")
