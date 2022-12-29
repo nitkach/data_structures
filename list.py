@@ -26,11 +26,15 @@ class List:
     def __init__(self):
         self.head = None
         self.tail = None
-        self.length = 0
+        self._length = 0
 
 
     def __len__(self):
-        return self.length
+        return self._length
+
+
+    def length(self) -> int:
+        return self._length
 
 
     def __eq__(self, other: 'List'):
@@ -38,10 +42,10 @@ class List:
 
         count = 0
 
-        if self.length != other.length:
+        if self._length != other.length():
             return False
 
-        while count < self.length:
+        while count < self._length:
 
             if self[count] != other[count]:
                 return False
@@ -67,8 +71,7 @@ class List:
 
 
     def __getitem__(self, index):
-        self.check_index_borders(index)
-        index = self.index_transform(index)
+        index = self.check_index_and_transform(index)
 
         count = 0
         for elem in self:
@@ -78,33 +81,24 @@ class List:
 
 
     def __setitem__(self, index, elem):
-        self.check_index_borders(index)
-        self.find_node(self.index_transform(index)).elem = elem
+        index = self.check_index_and_transform(index)
+        self.find_node(index).elem = elem
         
 
     def __iter__(self):
         return ListIterator(self.head)
 
 
-    def index_transform(self, index: int) -> int:
+    def check_index_and_transform(self, index, include_border = 0):
         '''
-        Transform negative indices to correct positive value
+        [-len; len): border = 0, default.
+        [-len; len]: border = 1, for List.push and Queue.put;
         '''
-        return index + self.length if index < 0 else index
 
+        if index > self._length + include_border or index < -self._length:
+            raise Exception(f"Index {index} is out of bound! List length: {self._length}")
 
-    def check_index_borders(self, index, border = 1):
-        '''
-        check index in: 
-            [-len; len): border = 1 (default)
-            [-len; len]: border = 0
-        '''
-        if index > self.length - border or index < -self.length:
-            self.raise_exception_oob(index)
-
-
-    def raise_exception_oob(self, index):
-        raise Exception(f"Index {index} is out of bound! List length: {self.length}")
+        return index + self._length if index < 0 else index
 
     
     def find_node(self, index) -> Node:
@@ -127,40 +121,39 @@ class List:
         '''
         Add element to tail list
         '''
-        self.insert(self.length, elem)
+        self.insert(self._length, elem, 1)
 
 
     # C
-    def insert(self, index, elem):
+    def insert(self, index, elem, include_border = 0):
         '''
         Insert element in list by moving to right all element standing on the right
         '''
-        self.check_index_borders(index, border = 0)
+        index = self.check_index_and_transform(index, include_border)
+
 
         # empty list
         if self.head == None:
             self.head = self.tail = Node(elem)
-            self.length += 1 # length
+            self._length += 1 # length
             return
-
-        index = self.index_transform(index)
 
         # insert first element
         if index == 0:
             self.head = Node(elem, self.head)
-            self.length += 1 # length
+            self._length += 1 # length
             return
 
         # insert in tail
-        if index == self.length: # tail
+        if index == self._length: # tail
             self.tail.next = Node(elem)
             self.tail = self.tail.next
-            self.length += 1 # length
+            self._length += 1 # length
             return
 
         prev_node = self.find_node(index - 1)
         prev_node.next = Node(elem, prev_node.next)
-        self.length += 1
+        self._length += 1
 
 
     # D
@@ -168,42 +161,30 @@ class List:
         '''
         Remove element by index
         '''
-        if self.check_index_borders(index, border = 1):
-            self.raise_exception_oob(index)
+        index = self.check_index_and_transform(index)
 
-        index = self.index_transform(index)
 
         if index == 0:
             self.head = self.head.next
-            self.length -= 1
+            self._length -= 1
             return
 
         prev_node = self.find_node(index - 1)
 
-        if index == self.length - 1:
+        if index == self._length - 1:
             self.tail = prev_node
         
         prev_node.next = prev_node.next.next
-        self.length -= 1
-
-
-    def length(self) -> int:
-        return self.length
+        self._length -= 1
 
 
     def find(self, elem) -> int | None:
         '''
         Try to find element in list
         '''
-        curr_node = self.head
-
-        count = 0
-
-        while curr_node: # check for None
-            if curr_node.elem == elem: 
-                return count
-            count += 1
-            curr_node = curr_node.next 
+        for index, value in enumerate(self):
+            if value == elem:
+                return index
 
         return None
 
@@ -215,7 +196,7 @@ class List:
         print(str(self))
 
     
-    def from_array(array):
+    def from_array(array: list) -> 'List':
         '''
         Move element from array to list
         '''
@@ -225,24 +206,3 @@ class List:
             l.push(elem)
 
         return l
-
-
-# l = List.from_array(['a', 'b', 'c', 'd'])
-
-# print(l.length)
-
-# print(l)
-# print(f"len = {l.length}\n")
-
-# l.insert(-3, 'd')
-
-# print(l)
-
-# for element in l:
-#     print(f"element = {element}")
-
-# for i in range(len(l)):
-#     print(f"l[{i}] = {l[i]}")
-
-# for i in range(-1, -len(l) - 1, -1):
-#     print(f"l[{i}] = {l[i]}")
