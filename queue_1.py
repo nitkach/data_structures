@@ -1,54 +1,60 @@
-from list import Node, List, ListIterator
+from list import List
 
 
-class Queue(List):
+class QueueIterator:
+    def __init__(self, head) -> None:
+        self.current = head
+
+    
+    def __iter__(self):
+        return self
+
+
+    def __next__(self):
+        if self.current == None:
+            raise StopIteration
+
+        elem = self.current.elem
+        self.current = self.current.next
+        return elem
+
+
+class Queue:
     def __init__(self):
-        self.head = None
-        self.length = 0
+        self.list = List()   
+
+
+    def __len__(self):
+        return self.list.length()
+
+
+    def length(self):
+        return self.list.length()
+
+
+    def __eq__(self, other: 'List'):
+        return self.list.__eq__(other)
 
 
     def __getitem__(self, index):
-        self.check_index_borders(index)
-        if index != 0:
-            raise Exception(f"You cannot access to this element!")
-        return self.head.elem
+        return self.list.__getitem__(index)
 
 
     def __setitem__(self, index, elem):
-        self.check_index_borders(index)
-        raise Exception(f"You cannot change value!")
+        self.list.__setitem__(index, elem)
+
+
+    def __str__(self) -> str:
+        return str(self.list)
 
 
     def put(self, elem):
-        if self.head == None:
-            self.head = Node(elem)
-            self.length += 1
-            return
+        self.list.push(elem)
 
-        curr_node = self.find_node(self.length - 1)
-        curr_node.next = Node(elem)
-        self.length += 1
-    # put == push
-    
-    # pop == remove(0)
+
     def pop(self):
-        if self.head == None:
-            raise Exception(f"Queue is empty! Nothing to pop.")
-
-        pop = self.head.elem
-
-        self.head = self.head.next
-
-        return pop
+        self.list.remove(0)
 
 
-q = Queue()
-
-q.put('a')
-q.put('b')
-q.put('c')
-
-q.pop()
-
-for elem in q:
-    print(elem)
+    def __iter__(self):
+        return QueueIterator(self.list.head)
