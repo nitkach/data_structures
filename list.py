@@ -38,6 +38,12 @@ class List:
 
 
     def __eq__(self, other: 'List'):
+        '''
+        pre: 
+            two lists
+        post: 
+            True if lists are equals, False if not
+        '''
         curr_node = self.head
 
         count = 0
@@ -57,6 +63,12 @@ class List:
 
     
     def __str__(self) -> str:
+        '''
+        pre: 
+            any list
+        post: 
+            returns list as string 
+        '''
         string = '['
 
         curr_node = self.head
@@ -71,6 +83,17 @@ class List:
 
 
     def __getitem__(self, index):
+        '''
+        Get element by index
+
+        pre: 
+            index in:
+                [-len; len)
+        ? inv: 
+            index validation 
+        post: 
+            returns element by index
+        '''
         index = self.check_index_and_transform(index)
 
         count = 0
@@ -81,6 +104,19 @@ class List:
 
 
     def __setitem__(self, index, elem):
+        '''
+        Set element by index
+
+        pre: 
+            index in:
+                [-len; len)
+            elem:
+                any
+        ? inv: 
+            index validation
+        post: 
+            sets element by index
+        '''
         index = self.check_index_and_transform(index)
         self.find_node(index).elem = elem
         
@@ -91,8 +127,14 @@ class List:
 
     def check_index_and_transform(self, index, include_border = 0):
         '''
-        [-len; len): border = 0, default.
-        [-len; len]: border = 1, for List.push and Queue.put;
+        Check index. If correct, returns new index value.
+
+        pre:
+            index must be in:
+                [-len; len) if include_border = 0, default.
+                [-len; len] if include_border = 1, for List.push and Queue.put;
+        post: 
+            returns transformed index
         '''
 
         if index > self._length + include_border or index < -self._length:
@@ -120,6 +162,12 @@ class List:
     def push(self, elem):
         '''
         Add element to tail list
+
+        pre:
+            elem:
+                any
+        post: 
+            element is added to the end of the list
         '''
         self.insert(self._length, elem, 1)
 
@@ -128,6 +176,15 @@ class List:
     def insert(self, index, elem, include_border = 0):
         '''
         Insert element in list by moving to right all element standing on the right
+        
+        pre:
+            index in:
+                [-len; len) if include_border = 0, default.
+                [-len; len] if include_border = 1, for List.push and Queue.put;
+            elem:
+                any
+        post:
+            element is inserted at index
         '''
         index = self.check_index_and_transform(index, include_border)
 
@@ -160,6 +217,12 @@ class List:
     def remove(self, index):
         '''
         Remove element by index
+
+        pre:
+            index in:
+                [-len; len)
+        post:
+            element is removed by index
         '''
         index = self.check_index_and_transform(index)
 
@@ -181,6 +244,12 @@ class List:
     def find(self, elem) -> int | None:
         '''
         Try to find element in list
+
+        pre:
+            elem:
+                any
+        post:
+            returns the index of the element if it contained in the List, otherwise returns None
         '''
         for index, value in enumerate(self):
             if value == elem:
