@@ -45,13 +45,15 @@ def test_equals_success():
     assert l1 == l2
 
 def test_equals_fail_element():
-    l2 = create_list()
-    l2[0] = 'd'
-    assert create_list() != l2
+    l1 = create_list()
+    l1[0] = 'd'
+
+    assert l1 != create_list()
 
 def test_equals_fail_len():
     l1 = create_list()
     l1.remove(0)
+    
     assert l1 != create_list()
 
 

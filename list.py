@@ -81,7 +81,7 @@ class List:
 
         return string
 
-
+    # R
     def __getitem__(self, index):
         '''
         Get element by index
@@ -102,7 +102,7 @@ class List:
                 return elem
             count += 1
 
-
+    # U
     def __setitem__(self, index, elem):
         '''
         Set element by index

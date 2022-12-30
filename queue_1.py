@@ -48,6 +48,10 @@ class Queue:
         return str(self.list)
 
 
+    def __iter__(self):
+        return QueueIterator(self.list.head)
+
+
     def put(self, elem):
         self.list.push(elem)
 
@@ -55,6 +59,6 @@ class Queue:
     def pop(self):
         self.list.remove(0)
 
-
-    def __iter__(self):
-        return QueueIterator(self.list.head)
+    
+    def find(self, elem):
+        return self.list.find(elem)
