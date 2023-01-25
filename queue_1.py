@@ -19,6 +19,7 @@ class QueueIterator:
         return elem
 
 
+# FIFO
 class Queue:
     def __init__(self):
         self.list = List()   
@@ -52,12 +53,19 @@ class Queue:
         return QueueIterator(self.list.head)
 
 
-    def put(self, elem):
-        self.list.push(elem)
-
-
     def pop(self):
         self.list.remove(0)
+
+
+    def push(self, elem):
+        self.list.push(elem)
+
+    
+    def peek(self):
+        if self.length() > 0:
+            return self.__getitem__(len(self) - 1)
+        else:
+            raise Exception("The Queue is empty!")
 
     
     def find(self, elem):
