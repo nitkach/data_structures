@@ -73,7 +73,7 @@ class List:
 
         curr_node = self.head
 
-        while curr_node: # проверка на None
+        while curr_node:
             string += curr_node.elem + ', ' * (curr_node.next != None) 
             curr_node = curr_node.next 
         
@@ -94,7 +94,7 @@ class List:
         post: 
             returns element by index
         '''
-        index = self.check_index_and_transform(index)
+        self.check_index(index)
 
         count = 0
         for elem in self:
@@ -117,7 +117,8 @@ class List:
         post: 
             sets element by index
         '''
-        index = self.check_index_and_transform(index)
+        self.check_index(index)
+
         self.find_node(index).elem = elem
         
 
@@ -125,7 +126,7 @@ class List:
         return ListIterator(self.head)
 
 
-    def check_index_and_transform(self, index, include_border = 0):
+    def check_index(self, index, include_border = 0):
         '''
         Check index. If correct, returns new index value.
 
@@ -137,10 +138,8 @@ class List:
             returns transformed index
         '''
 
-        if index > self._length + include_border or index < -self._length:
+        if index > self._length - 1 + include_border or index < 0:
             raise Exception(f"Index {index} is out of bound! List length: {self._length}")
-
-        return index + self._length if index < 0 else index
 
     
     def find_node(self, index) -> Node:
@@ -169,11 +168,11 @@ class List:
         post: 
             element is added to the end of the list
         '''
-        self.insert(self._length, elem, 1)
+        self.insert(self._length, elem)
 
 
     # C
-    def insert(self, index, elem, include_border = 0):
+    def insert(self, index, elem):
         '''
         Insert element in list by moving to right all element standing on the right
         
@@ -186,7 +185,7 @@ class List:
         post:
             element is inserted at index
         '''
-        index = self.check_index_and_transform(index, include_border)
+        self.check_index(index, 1)
 
 
         # empty list
@@ -224,7 +223,7 @@ class List:
         post:
             element is removed by index
         '''
-        index = self.check_index_and_transform(index)
+        self.check_index(index)
 
 
         if index == 0:
