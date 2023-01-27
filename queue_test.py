@@ -2,81 +2,62 @@ from queue_1 import Queue
 
 
 def create_queue():
-    q1 = Queue()
-
-    q1.put('p')
-    q1.put('o')
-    q1.put('n')
-    q1.put('y')
-
-    return q1
+    return Queue.from_array(['p', 'o', 'n', 'y'])
 
 
-def test_len():
+def test_pop_empty():
+    q = Queue()
+
+    actual_exception = None
+
+    try:
+        q.pop()
+    except Exception as exception:
+        actual_exception = exception
+
+    assert "Index 0 is out of bound" in str(actual_exception)
+
+
+def test_pop_non_empty():
     q = create_queue()
 
-    assert len(q) == 4
-    assert q.length() == 4
+    char = q.pop()
+
+    assert char == 'p' and str(q) == str(Queue.from_array(['o', 'n', 'y']))
 
 
-def test_equals_success():
-    q1 = create_queue()
-    q2 = create_queue()
+def test_push_to_empty():
+    q = Queue()
 
-    assert q1 == q2
+    q.push('X')
 
-def test_equals_fail_element():
-    q1 = create_queue()
-    q1[0] = 'd'
-
-    assert q1 != create_queue()
-
-def test_equals_fail_len():
-    q1 = create_queue()
-    q1.pop()
-
-    assert q1 != create_queue()
+    assert str(q) == str(Queue.from_array(['X']))
 
 
-def test_getitem_success():
-    q1 = create_queue()
+def test_push_to_non_empty():
+    q = create_queue()
 
-    assert q1[0] == q1[-len(q1)]
+    q.push('X')
 
-def test_getitem_fail():
-    q1 = create_queue()
-
-    assert q1[0] != q1[1]
+    assert str(q) == str(Queue.from_array(['p', 'o', 'n', 'y', 'X']))
 
 
-def test_setitem_success():
-    q1 = create_queue()
+def test_peek_the_empty():
+    q = Queue()
 
-    q1[0] = 'P'
+    actual_exception = None
 
-    assert q1[0] == 'P'
+    try:
+        q.peek()
+    except Exception as exception:
+        actual_exception = exception
 
-def test_setitem_fail():
-    q1 = create_queue()
-
-    q1[0] = 'P'
-
-    assert q1 != create_queue()
+    assert "Index 0 is out of bound" in str(actual_exception)
 
 
-def test_string():
-    q1 = create_queue()
+def test_peek_the_non_empty():
+    q = create_queue()
 
-    assert str(q1) == '[p, o, n, y]'
+    char = q.peek()
 
-
-def test_find_success():
-    q1 = create_queue()
-
-    assert q1.find('p') == 0
-
-
-def test_find_fail():
-    q1 = create_queue()
-    
-    assert q1.find('x') == None
+    assert char == 'p'
