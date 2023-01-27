@@ -2,113 +2,214 @@ from list import List
 
 
 def create_list():
+    return List.from_array(['p', 'o', 'n', 'y'])
+
+
+def test_push_into_empty():
     l = List()
 
-    l.push('p')
-    l.push('o')
-    l.push('n')
-    l.push('y')
+    l.push('X')
 
-    return l
+    assert str(l) == str(List.from_array(['X']))
 
 
-def test_getitem_success():
-    assert create_list()[0] == 'p'
+def test_push_into_non_empty():
+    l = create_list()
 
-def test_getitem_fail():
-    assert create_list()[0] != 'a'
+    l.push('X')
 
-
-def test_setitem_success():
-    l1 = create_list()
-    l2 = create_list()
-
-    l1[-1] = 'k'
-    l2[-1] = 'k'
-
-    assert l1 == l2
-
-def test_setitem_fail():
-    l1 = create_list()
-    l2 = create_list()
-
-    l1[-1] = 'k'
-    l2[-1] = 't'
-
-    assert l1 != l2
+    assert str(l) == str(List.from_array(['p', 'o', 'n', 'y', 'X']))
 
 
-def test_equals_success():
-    l1 = create_list()
-    l2 = create_list()
+def test_insert_into_empty_success():
+    l = List()
 
-    assert l1 == l2
+    l.insert(0, 'X')
 
-def test_equals_fail_element():
-    l1 = create_list()
-    l1[0] = 'd'
-
-    assert l1 != create_list()
-
-def test_equals_fail_len():
-    l1 = create_list()
-    l1.remove(0)
-    
-    assert l1 != create_list()
+    assert str(l) == str(List.from_array(['X']))
 
 
-def test_push_success():
-    l1 = create_list()
+def test_insert_into_empty_fail():
+    l = List()
 
-    l1.push('t')
+    actual_exception = None
 
-    assert len(l1) == len(create_list()) + 1 and l1[-1] == 't'
+    try:
+        l.insert(1, 'X')
+    except Exception as exception:
+        actual_exception = exception
 
-def test_push_fail():
-    l1 = create_list()
-
-    l1.push('t')
-
-    assert len(l1) - 1 == len(create_list())
+    assert "Index 1 is out of bound" in str(actual_exception)
 
 
-def test_insert_success():
-    l1 = create_list()
-
-    l1.insert(3, 'u')
-
-    assert str(l1) == '[p, o, n, u, y]'
-
-def test_insert_fail():
-    l1 = create_list()
-
-    l1.insert(3, 'u')
-
-    assert str(l1) != '[p, o, n, y]'
+def test_insert_head_into_non_empty_success():
+    l = create_list()
+    l.insert(0, 'X')
+    assert str(l) == str(List.from_array(['X', 'p', 'o', 'n', 'y']))
 
 
-def test_remove_success():
-    l1 = create_list()
-    l1.remove(0)
+def test_insert_middle_into_non_empty_success():
+    l = create_list()
+    l.insert(1, 'X')
+    assert str(l) == str(List.from_array(['p', 'X', 'o', 'n', 'y']))
 
-    l2 = create_list()
-    l2.remove(0)
-
-    assert l1 == l2
-
-def test_remove_fail():
-    l1 = create_list()
-    l1.remove(0)
-
-    assert l1 != create_list()
+    l = create_list()
+    l.insert(2, 'X')
+    assert str(l) == str(List.from_array(['p', 'o', 'X', 'n', 'y']))
 
 
-def test_find_success():
-    l1 = create_list()
+def test_insert_tail_into_non_empty_success():
+    l = create_list()
+    l.insert(3, 'X')
+    assert str(l) == str(List.from_array(['p', 'o', 'n', 'X', 'y']))
 
-    assert l1.find('p') == 0
 
-def test_find_fail():
-    l1 = create_list()
+def test_insert_len_into_non_empty_success():
+    l = create_list()
+    l.insert(4, 'X')
+    assert str(l) == str(List.from_array(['p', 'o', 'n', 'y', 'X']))
 
-    assert l1.find('p') != 1
+
+def test_insert_into_non_empty_fail():
+    l = create_list()
+
+    actual_exception = None
+
+    try:
+        l.insert(5, 'X')
+    except Exception as exception:
+        actual_exception = exception
+
+    assert "Index 5 is out of bound" in str(actual_exception)
+
+
+def test_remove_from_empty_fail():
+    l = List()
+
+    actual_exception = None
+
+    try:
+        l.remove(0)
+    except Exception as exception:
+        actual_exception = exception
+
+    assert "Index 0 is out of bound" in str(actual_exception)
+
+
+def test_remove_head_from_non_empty_success():
+    l = create_list()
+
+    l.remove(0)
+
+    assert str(l) == str(List.from_array(['o', 'n', 'y']))
+
+
+def test_remove_middle_from_non_empty_success():
+    l = create_list()
+    l.remove(1)
+    assert str(l) == str(List.from_array(['p', 'n', 'y']))
+
+    l = create_list()
+    l.remove(2)
+    assert str(l) == str(List.from_array(['p', 'o', 'y']))
+
+
+def test_remove_tail_from_non_empty_success():
+    l = create_list()
+
+    l.remove(3)
+
+    assert str(l) == str(List.from_array(['p', 'o', 'n']))
+
+
+def test_remove_from_non_empty_fail():
+    l = create_list()
+
+    actual_exception = None
+
+    try:
+        l.remove(4)
+    except Exception as exception:
+        actual_exception = exception
+
+    assert "Index 4 is out of bound" in str(actual_exception)
+
+
+def test_get_elem_from_empty_fail():
+    l = List()
+
+    actual_exception = None
+
+    try:
+        l[0]
+    except Exception as exception:
+        actual_exception = exception
+
+    assert "Index 0 is out of bound" in str(actual_exception)
+
+
+def test_get_head_elem_from_non_empty_success():
+    l = create_list()
+
+    assert l[0] == 'p'
+
+
+def test_get_middle_elem_from_non_empty_success():
+    l = create_list()
+
+    assert l[1] == 'o'
+    assert l[2] == 'n'
+
+
+def test_get_tail_elem_from_non_empty_success():
+    l = create_list()
+
+    assert l[3] == 'y'
+
+
+def test_get_elem_from_non_empty_fail():
+    l = create_list()
+
+    actual_exception = None
+
+    try:
+        l[4]
+    except Exception as exception:
+        actual_exception = exception
+
+    assert "Index 4 is out of bound" in str(actual_exception)
+
+
+def test_set_head_elem_into_non_empty_success():
+    l = create_list()
+    l[0] = 'X'
+    assert str(l) == str(List.from_array(['X', 'o', 'n', 'y']))
+
+
+def test_set_middle_elem_into_non_empty_success():
+    l = create_list()
+    l[1] = 'X'
+    assert str(l) == str(List.from_array(['p', 'X', 'n', 'y']))
+
+    l = create_list()
+    l[2] = 'X'
+    assert str(l) == str(List.from_array(['p', 'o', 'X', 'y']))
+
+
+def test_set_elem_tail_into_non_empty_success():
+    l = create_list()
+    l[3] = 'X'
+    assert str(l) == str(List.from_array(['p', 'o', 'n', 'X']))
+
+
+def test_set_elem_into_non_empty_fail():
+    l = create_list()
+
+    actual_exception = None
+
+    try:
+        l[4] = 'X'
+    except Exception as exception:
+        actual_exception = exception
+
+    assert "Index 4 is out of bound" in str(actual_exception)
