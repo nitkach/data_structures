@@ -54,7 +54,7 @@ class Queue:
 
 
     def pop(self):
-        self.list.remove(0)
+        return self.list.remove(0)
 
 
     def push(self, elem):
@@ -62,11 +62,17 @@ class Queue:
 
     
     def peek(self):
-        if self.length() > 0:
-            return self.__getitem__(len(self) - 1)
-        else:
-            raise Exception("The Queue is empty!")
+        return self.__getitem__(0)
 
     
     def find(self, elem):
         return self.list.find(elem)
+
+
+    def from_array(array: list):
+        q = Queue()
+
+        for elem in array:
+            q.push(elem)
+
+        return q

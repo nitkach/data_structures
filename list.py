@@ -227,17 +227,21 @@ class List:
 
 
         if index == 0:
+            elem = self.head.elem
             self.head = self.head.next
             self._length -= 1
-            return
+            return elem
 
         prev_node = self.find_node(index - 1)
+        elem = prev_node.next.elem
 
         if index == self._length - 1:
             self.tail = prev_node
         
         prev_node.next = prev_node.next.next
         self._length -= 1
+        
+        return elem
 
 
     def find(self, elem) -> int | None:
