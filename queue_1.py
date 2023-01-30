@@ -1,24 +1,6 @@
 from list import List
 
 
-class QueueIterator:
-    def __init__(self, head) -> None:
-        self.current = head
-
-    
-    def __iter__(self):
-        return self
-
-
-    def __next__(self):
-        if self.current == None:
-            raise StopIteration
-
-        elem = self.current.elem
-        self.current = self.current.next
-        return elem
-
-
 # FIFO
 class Queue:
     def __init__(self):
@@ -50,7 +32,7 @@ class Queue:
 
 
     def __iter__(self):
-        return QueueIterator(self.list.head)
+        return self.list.__iter__()
 
 
     def pop(self):

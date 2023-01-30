@@ -61,3 +61,14 @@ def test_peek_the_non_empty():
     char = q.peek()
 
     assert char == 'p'
+
+
+def test_iter():
+    q = create_queue()
+
+    ans = Queue()
+
+    for elem in q:
+        ans.push(elem)
+
+    assert ans == q

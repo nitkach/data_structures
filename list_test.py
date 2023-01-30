@@ -213,3 +213,14 @@ def test_set_elem_into_non_empty_fail():
         actual_exception = exception
 
     assert "Index 4 is out of bound" in str(actual_exception)
+
+
+def test_iter():
+    l = create_list()
+
+    ans = List()
+
+    for elem in l:
+        ans.push(elem)
+
+    assert ans == l
