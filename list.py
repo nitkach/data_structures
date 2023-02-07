@@ -1,10 +1,10 @@
-class Node:
+class _Node:
     def __init__(self, elem, next = None):
         self.elem = elem
         self.next = next
 
 
-class ListIterator:
+class _ListIterator:
     def __init__(self, head):
         self.current = head
 
@@ -24,17 +24,17 @@ class ListIterator:
 
 class List:
     def __init__(self):
-        self.head = None
-        self.tail = None
-        self._length = 0
+        self.__head = None
+        self.__tail = None
+        self.__length = 0
 
 
     def __len__(self):
-        return self._length
+        return self.__length
 
 
     def length(self) -> int:
-        return self._length
+        return self.__length
 
 
     def __eq__(self, other: 'List'):
@@ -44,14 +44,14 @@ class List:
         post: 
             True if lists are equals, False if not
         '''
-        curr_node = self.head
+        curr_node = self.__head
 
         count = 0
 
-        if self._length != other.length():
+        if self.__length != other.length():
             return False
 
-        while count < self._length:
+        while count < self.__length:
 
             if self[count] != other[count]:
                 return False
@@ -71,7 +71,7 @@ class List:
         '''
         string = '['
 
-        curr_node = self.head
+        curr_node = self.__head
 
         while curr_node:
             string += curr_node.elem + ', ' * (curr_node.next != None) 
@@ -94,7 +94,7 @@ class List:
         post: 
             returns element by index
         '''
-        self.check_index(index)
+        self.__check_index(index)
 
         count = 0
         for elem in self:
@@ -117,16 +117,16 @@ class List:
         post: 
             sets element by index
         '''
-        self.check_index(index)
+        self.__check_index(index)
 
-        self.find_node(index).elem = elem
+        self.__find_node(index).elem = elem
         
 
     def __iter__(self):
-        return ListIterator(self.head)
+        return _ListIterator(self.__head)
 
 
-    def check_index(self, index, include_border = 0):
+    def __check_index(self, index, include_border = 0):
         '''
         Check index. If correct, returns new index value.
 
@@ -138,15 +138,15 @@ class List:
             returns transformed index
         '''
 
-        if index > self._length - 1 + include_border or index < 0:
-            raise Exception(f"Index {index} is out of bound! List length: {self._length}")
+        if index > self.__length - 1 + include_border or index < 0:
+            raise Exception(f"Index {index} is out of bound! List length: {self.__length}")
 
     
-    def find_node(self, index) -> Node:
+    def __find_node(self, index) -> _Node:
         '''
         Find node by index
         '''
-        curr_node = self.head
+        curr_node = self.__head
 
         count = 0
 
@@ -168,7 +168,7 @@ class List:
         post: 
             element is added to the end of the list
         '''
-        self.insert(self._length, elem)
+        self.insert(self.__length, elem)
 
 
     # C
@@ -185,31 +185,31 @@ class List:
         post:
             element is inserted at index
         '''
-        self.check_index(index, 1)
+        self.__check_index(index, 1)
 
 
         # empty list
-        if self.head == None:
-            self.head = self.tail = Node(elem)
-            self._length += 1 # length
+        if self.__head == None:
+            self.__head = self.__tail = _Node(elem)
+            self.__length += 1 # length
             return
 
         # insert first element
         if index == 0:
-            self.head = Node(elem, self.head)
-            self._length += 1 # length
+            self.__head = _Node(elem, self.__head)
+            self.__length += 1 # length
             return
 
         # insert in tail
-        if index == self._length: # tail
-            self.tail.next = Node(elem)
-            self.tail = self.tail.next
-            self._length += 1 # length
+        if index == self.__length: # tail
+            self.__tail.next = _Node(elem)
+            self.__tail = self.__tail.next
+            self.__length += 1 # length
             return
 
-        prev_node = self.find_node(index - 1)
-        prev_node.next = Node(elem, prev_node.next)
-        self._length += 1
+        prev_node = self.__find_node(index - 1)
+        prev_node.next = _Node(elem, prev_node.next)
+        self.__length += 1
 
 
     # D
@@ -223,23 +223,23 @@ class List:
         post:
             element is removed by index
         '''
-        self.check_index(index)
+        self.__check_index(index)
 
 
         if index == 0:
-            elem = self.head.elem
-            self.head = self.head.next
-            self._length -= 1
+            elem = self.__head.elem
+            self.__head = self.__head.next
+            self.__length -= 1
             return elem
 
-        prev_node = self.find_node(index - 1)
+        prev_node = self.__find_node(index - 1)
         elem = prev_node.next.elem
 
-        if index == self._length - 1:
-            self.tail = prev_node
+        if index == self.__length - 1:
+            self.__tail = prev_node
         
         prev_node.next = prev_node.next.next
-        self._length -= 1
+        self.__length -= 1
         
         return elem
 
