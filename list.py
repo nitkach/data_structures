@@ -30,19 +30,22 @@ class List:
 
 
     def __len__(self):
+        '''
+        Returns the length of the List.
+        '''
         return self.__length
 
 
     def length(self) -> int:
+        '''
+        Returns the length of the List.
+        '''
         return self.__length
 
 
     def __eq__(self, other: 'List'):
         '''
-        pre: 
-            two lists
-        post: 
-            True if lists are equals, False if not
+        Comparing two Lists.
         '''
         curr_node = self.__head
 
@@ -64,10 +67,7 @@ class List:
     
     def __str__(self) -> str:
         '''
-        pre: 
-            any list
-        post: 
-            returns list as string 
+        Creates a string from the List.
         '''
         string = '['
 
@@ -84,15 +84,9 @@ class List:
     # R
     def __getitem__(self, index):
         '''
-        Get element by index
+        Gets element by index.
 
-        pre: 
-            index in:
-                [-len; len)
-        ? inv: 
-            index validation 
-        post: 
-            returns element by index
+        Panics if index >= len.
         '''
         self.__check_index(index)
 
@@ -105,17 +99,9 @@ class List:
     # U
     def __setitem__(self, index, elem):
         '''
-        Set element by index
+        Sets element by index.
 
-        pre: 
-            index in:
-                [-len; len)
-            elem:
-                any
-        ? inv: 
-            index validation
-        post: 
-            sets element by index
+        Panics if index >= len.
         '''
         self.__check_index(index)
 
@@ -123,19 +109,18 @@ class List:
         
 
     def __iter__(self):
+        '''
+        Returns the iterator of the List
+        '''
         return _ListIterator(self.__head)
 
 
     def __check_index(self, index, include_border = 0):
         '''
-        Check index. If correct, returns new index value.
+        Checks the index.
 
-        pre:
-            index must be in:
-                [-len; len) if include_border = 0, default.
-                [-len; len] if include_border = 1, for List.push and Queue.put;
-        post: 
-            returns transformed index
+        Panics if index > len, when called by insert() method.
+        In other calls panics if index >= len.
         '''
 
         if index > self.__length - 1 + include_border or index < 0:
@@ -144,7 +129,7 @@ class List:
     
     def __find_node(self, index) -> _Node:
         '''
-        Find node by index
+        Finds node by index.
         '''
         curr_node = self.__head
 
@@ -160,13 +145,7 @@ class List:
     # C
     def push(self, elem):
         '''
-        Add element to tail list
-
-        pre:
-            elem:
-                any
-        post: 
-            element is added to the end of the list
+        Appends an element to the tail List.
         '''
         self.insert(self.__length, elem)
 
@@ -174,16 +153,9 @@ class List:
     # C
     def insert(self, index, elem):
         '''
-        Insert element in list by moving to right all element standing on the right
+        Inserts a new element into the List at the specified index.
         
-        pre:
-            index in:
-                [-len; len) if include_border = 0, default.
-                [-len; len] if include_border = 1, for List.push and Queue.put;
-            elem:
-                any
-        post:
-            element is inserted at index
+        Panics if index > len.
         '''
         self.__check_index(index, 1)
 
@@ -215,13 +187,9 @@ class List:
     # D
     def remove(self, index):
         '''
-        Remove element by index
+        Removes the element at given index and returns it.
 
-        pre:
-            index in:
-                [-len; len)
-        post:
-            element is removed by index
+        Panics if index >= len.
         '''
         self.__check_index(index)
 
@@ -246,13 +214,7 @@ class List:
 
     def find(self, elem) -> int | None:
         '''
-        Try to find element in list
-
-        pre:
-            elem:
-                any
-        post:
-            returns the index of the element if it contained in the List, otherwise returns None
+        Tries to find an element in List and return it's index. 
         '''
         for index, value in enumerate(self):
             if value == elem:
@@ -263,14 +225,14 @@ class List:
     
     def print(self):
         '''
-        Print list
+        Prints List.
         '''
         print(str(self))
 
     
     def from_array(array: list) -> 'List':
         '''
-        Move element from array to list
+        Creates List from array.
         '''
         l = List()
 
