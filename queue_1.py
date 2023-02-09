@@ -9,21 +9,24 @@ class Queue:
 
     def __len__(self):
         '''
-        Returns the length of the Queue.
+        Returns the length of the queue.
         '''
         return self.list.length()
 
 
     def length(self):
         '''
-        Returns the length of the Queue.
+        Returns the length of the queue.
         '''
         return self.list.length()
 
 
     def __eq__(self, other: 'List'):
         '''
-        Comparing two Queues.
+        Comparing two queues.
+
+        If the queues are equal, returns 'True'.
+        If the queues are non-equal, returns 'False'.
         '''
         return self.list.__eq__(other)
 
@@ -32,7 +35,8 @@ class Queue:
         '''
         Gets element by index.
 
-        Panics if index >= len.
+        # Exceptions
+        Raises exception if 'index >= len'.
         '''
         return self.list.__getitem__(index)
 
@@ -41,21 +45,25 @@ class Queue:
         '''
         Sets element by index.
 
-        Panics if index >= len.
+        # Exceptions
+        Raises exception if 'index >= len'.
         '''
         self.list.__setitem__(index, elem)
 
 
     def __str__(self) -> str:
         '''
-        Creates a string from the Queue.
+        Creates a string from the queue.
+
+        Returns string in format: '[' + queue elements separated by ', ' + ']'.
+        Empty queue returns '[]'
         '''
         return str(self.list)
 
 
     def __iter__(self):
         '''
-        Returns the iterator of the Queue.
+        Returns the iterator of the queue.
         '''
         return self.list.__iter__()
 
@@ -64,14 +72,15 @@ class Queue:
         '''
         Removes the front element and returns it.
 
-        Panics if len == 0 (Queue is empty).
+        # Exceptions
+        Raises exception if an attempt is made to remove an element from an empty queue.
         '''
         return self.list.remove(0)
 
 
     def push(self, elem):
         '''
-        Creates a new element at the back of the Queue.
+        Creates a new element at the back of the queue.
         '''
         self.list.push(elem)
 
@@ -80,21 +89,22 @@ class Queue:
         '''
         Gets the front element.
 
-        Panics if len == 0 (Queue is empty).
+        # Exceptions
+        Raises an exception if an attempt is made to peek into an empty queue.
         '''
         return self.__getitem__(0)
 
     
     def find(self, elem):
         '''
-        Tries to find an element in the Queue and returns it.
+        Tries to find the entered element in the queue and return its index.
         '''
         return self.list.find(elem)
 
 
     def from_array(array: list):
         '''
-        Creates Queue from array.
+        Creates queue from array.
         '''
         q = Queue()
 
