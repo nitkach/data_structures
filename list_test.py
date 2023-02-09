@@ -10,7 +10,7 @@ def test_push_into_empty():
 
     l.push('X')
 
-    assert str(l) == str(List.from_array(['X']))
+    assert l == List.from_array(['X'])
 
 
 def test_push_into_non_empty():
@@ -18,7 +18,7 @@ def test_push_into_non_empty():
 
     l.push('X')
 
-    assert str(l) == str(List.from_array(['p', 'o', 'n', 'y', 'X']))
+    assert l == List.from_array(['p', 'o', 'n', 'y', 'X'])
 
 
 def test_insert_into_empty_success():
@@ -26,7 +26,7 @@ def test_insert_into_empty_success():
 
     l.insert(0, 'X')
 
-    assert str(l) == str(List.from_array(['X']))
+    assert l == List.from_array(['X'])
 
 
 def test_insert_into_empty_fail():
@@ -45,29 +45,29 @@ def test_insert_into_empty_fail():
 def test_insert_head_into_non_empty_success():
     l = create_list()
     l.insert(0, 'X')
-    assert str(l) == str(List.from_array(['X', 'p', 'o', 'n', 'y']))
+    assert l == List.from_array(['X', 'p', 'o', 'n', 'y'])
 
 
 def test_insert_middle_into_non_empty_success():
     l = create_list()
     l.insert(1, 'X')
-    assert str(l) == str(List.from_array(['p', 'X', 'o', 'n', 'y']))
+    assert l == List.from_array(['p', 'X', 'o', 'n', 'y'])
 
     l = create_list()
     l.insert(2, 'X')
-    assert str(l) == str(List.from_array(['p', 'o', 'X', 'n', 'y']))
+    assert l == List.from_array(['p', 'o', 'X', 'n', 'y'])
 
 
 def test_insert_tail_into_non_empty_success():
     l = create_list()
     l.insert(3, 'X')
-    assert str(l) == str(List.from_array(['p', 'o', 'n', 'X', 'y']))
+    assert l == List.from_array(['p', 'o', 'n', 'X', 'y'])
 
 
 def test_insert_len_into_non_empty_success():
     l = create_list()
     l.insert(4, 'X')
-    assert str(l) == str(List.from_array(['p', 'o', 'n', 'y', 'X']))
+    assert l == List.from_array(['p', 'o', 'n', 'y', 'X'])
 
 
 def test_insert_into_non_empty_fail():
@@ -101,17 +101,17 @@ def test_remove_head_from_non_empty_success():
 
     l.remove(0)
 
-    assert str(l) == str(List.from_array(['o', 'n', 'y']))
+    assert l == List.from_array(['o', 'n', 'y'])
 
 
 def test_remove_middle_from_non_empty_success():
     l = create_list()
     l.remove(1)
-    assert str(l) == str(List.from_array(['p', 'n', 'y']))
+    assert l == List.from_array(['p', 'n', 'y'])
 
     l = create_list()
     l.remove(2)
-    assert str(l) == str(List.from_array(['p', 'o', 'y']))
+    assert l == List.from_array(['p', 'o', 'y'])
 
 
 def test_remove_tail_from_non_empty_success():
@@ -119,7 +119,7 @@ def test_remove_tail_from_non_empty_success():
 
     l.remove(3)
 
-    assert str(l) == str(List.from_array(['p', 'o', 'n']))
+    assert l == List.from_array(['p', 'o', 'n'])
 
 
 def test_remove_from_non_empty_fail():
@@ -183,23 +183,23 @@ def test_get_elem_from_non_empty_fail():
 def test_set_head_elem_into_non_empty_success():
     l = create_list()
     l[0] = 'X'
-    assert str(l) == str(List.from_array(['X', 'o', 'n', 'y']))
+    assert l == List.from_array(['X', 'o', 'n', 'y'])
 
 
 def test_set_middle_elem_into_non_empty_success():
     l = create_list()
     l[1] = 'X'
-    assert str(l) == str(List.from_array(['p', 'X', 'n', 'y']))
+    assert l == List.from_array(['p', 'X', 'n', 'y'])
 
     l = create_list()
     l[2] = 'X'
-    assert str(l) == str(List.from_array(['p', 'o', 'X', 'y']))
+    assert l == List.from_array(['p', 'o', 'X', 'y'])
 
 
 def test_set_elem_tail_into_non_empty_success():
     l = create_list()
     l[3] = 'X'
-    assert str(l) == str(List.from_array(['p', 'o', 'n', 'X']))
+    assert l == List.from_array(['p', 'o', 'n', 'X'])
 
 
 def test_set_elem_into_non_empty_fail():
@@ -224,3 +224,60 @@ def test_iter():
         ans.push(elem)
 
     assert ans == l
+
+
+def test_len_empty():
+    l = List()
+
+    assert len(l) == 0
+
+
+def test_len_non_empty():
+    l = create_list()
+
+    assert len(l) == 4
+
+
+def test_compare_equal():
+    l = create_list()
+
+    assert l == List.from_array(['p', 'o', 'n', 'y'])
+
+
+def test_compare_non_equal():
+    l1 = create_list()
+    l2 = List.from_array(['X'])
+
+    ans = not l1 == l2
+
+    assert ans
+
+
+def test_string_empty():
+    l = List()
+
+    assert str(l) == '[]'
+
+
+def test_string_non_empty():
+    l = create_list()
+
+    assert str(l) == '[p, o, n, y]'
+
+
+def test_find_elem_in_empty():
+    l = List()
+
+    assert l.find('X') == None
+
+
+def test_find_elem_in_non_empty_success():
+    l = create_list()
+
+    assert l.find('o') == 1
+
+
+def test_find_elem_in_non_empty_fail():
+    l = create_list()
+
+    assert l.find('X') == None

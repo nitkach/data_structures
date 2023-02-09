@@ -5,7 +5,7 @@ def create_queue():
     return Queue.from_array(['p', 'o', 'n', 'y'])
 
 
-def test_pop_empty():
+def test_pop_in_empty_fail():
     q = Queue()
 
     actual_exception = None
@@ -18,12 +18,12 @@ def test_pop_empty():
     assert "Index 0 is out of bound" in str(actual_exception)
 
 
-def test_pop_non_empty():
+def test_pop_in_non_empty_success():
     q = create_queue()
 
     char = q.pop()
 
-    assert char == 'p' and str(q) == str(Queue.from_array(['o', 'n', 'y']))
+    assert char == 'p' and q == Queue.from_array(['o', 'n', 'y'])
 
 
 def test_push_to_empty():
@@ -31,7 +31,7 @@ def test_push_to_empty():
 
     q.push('X')
 
-    assert str(q) == str(Queue.from_array(['X']))
+    assert q == Queue.from_array(['X'])
 
 
 def test_push_to_non_empty():
@@ -39,10 +39,10 @@ def test_push_to_non_empty():
 
     q.push('X')
 
-    assert str(q) == str(Queue.from_array(['p', 'o', 'n', 'y', 'X']))
+    assert q == Queue.from_array(['p', 'o', 'n', 'y', 'X'])
 
 
-def test_peek_the_empty():
+def test_peek_the_empty_fail():
     q = Queue()
 
     actual_exception = None
@@ -55,7 +55,7 @@ def test_peek_the_empty():
     assert "Index 0 is out of bound" in str(actual_exception)
 
 
-def test_peek_the_non_empty():
+def test_peek_the_non_empty_success():
     q = create_queue()
 
     char = q.peek()
@@ -72,3 +72,60 @@ def test_iter():
         ans.push(elem)
 
     assert ans == q
+
+
+def test_len_empty():
+    q = Queue()
+
+    assert len(q) == 0
+
+
+def test_len_non_empty():
+    q = create_queue()
+
+    assert len(q) == 4
+
+
+def test_compare_equal():
+    q = create_queue()
+
+    assert q == Queue.from_array(['p', 'o', 'n', 'y'])
+
+
+def test_compare_non_equal():
+    q1 = create_queue()
+    q2 = Queue.from_array(['X'])
+
+    ans = not q1 == q2
+
+    assert ans
+
+
+def test_string_empty():
+    q = Queue()
+
+    assert str(q) == '[]'
+
+
+def test_string_non_empty():
+    q = create_queue()
+
+    assert str(q) == '[p, o, n, y]'
+
+
+def test_find_elem_in_empty():
+    q = Queue()
+
+    assert q.find('X') == None
+
+
+def test_find_elem_in_non_empty():
+    q = create_queue()
+
+    assert q.find('o') == 1
+
+
+def test_find_elem_in_non_empty_fail():
+    q = create_queue()
+
+    assert q.find('X') == None
