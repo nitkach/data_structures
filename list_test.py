@@ -99,27 +99,27 @@ def test_remove_from_empty_fail():
 def test_remove_head_from_non_empty_success():
     l = create_list()
 
-    l.remove(0)
+    char = l.remove(0)
 
-    assert l == List.from_array(['o', 'n', 'y'])
+    assert char == 'p' and l == List.from_array(['o', 'n', 'y'])
 
 
 def test_remove_middle_from_non_empty_success():
     l = create_list()
-    l.remove(1)
-    assert l == List.from_array(['p', 'n', 'y'])
+    char = l.remove(1)
+    assert char == 'o' and l == List.from_array(['p', 'n', 'y'])
 
     l = create_list()
-    l.remove(2)
-    assert l == List.from_array(['p', 'o', 'y'])
+    char = l.remove(2)
+    assert char == 'n' and l == List.from_array(['p', 'o', 'y'])
 
 
 def test_remove_tail_from_non_empty_success():
     l = create_list()
 
-    l.remove(3)
+    char = l.remove(3)
 
-    assert l == List.from_array(['p', 'o', 'n'])
+    assert char == 'y' and l == List.from_array(['p', 'o', 'n'])
 
 
 def test_remove_from_non_empty_fail():
@@ -271,13 +271,13 @@ def test_find_elem_in_empty():
     assert l.find('X') == None
 
 
-def test_find_elem_in_non_empty_success():
+def test_find_existing_elem_in_non_empty():
     l = create_list()
 
     assert l.find('o') == 1
 
 
-def test_find_elem_in_non_empty_fail():
+def test_find_non_existing_elem_in_non_empty():
     l = create_list()
 
     assert l.find('X') == None

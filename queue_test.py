@@ -119,13 +119,13 @@ def test_find_elem_in_empty():
     assert q.find('X') == None
 
 
-def test_find_elem_in_non_empty():
+def test_find_existing_elem_in_non_empty():
     q = create_queue()
 
     assert q.find('o') == 1
 
 
-def test_find_elem_in_non_empty_fail():
+def test_find_non_existing_elem_in_non_empty_fail():
     q = create_queue()
 
     assert q.find('X') == None
