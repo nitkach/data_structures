@@ -1,5 +1,8 @@
+from typing import Any
+
+
 class _Node:
-    def __init__(self, elem, next = None):
+    def __init__(self, elem, next=None):
         self.elem = elem
         self.next = next
 
@@ -8,13 +11,11 @@ class _ListIterator:
     def __init__(self, head):
         self.current = head
 
-    
     def __iter__(self):
         return self
 
-
     def __next__(self):
-        if self.current == None:
+        if self.current is None:
             raise StopIteration
 
         elem = self.current.elem
@@ -28,56 +29,53 @@ class List:
         self.__tail = None
         self.__length = 0
 
-
-    def __len__(self):
+    def __len__(self) -> int:
         '''
         Returns the length of the list.
 
         # Examples
 
-        from list import List
+        >>> from list import List
 
-        l = List()
-        
-        assert len(l) == 0
-        
-        l.push(1)
-        assert len(l) == 1
-        
-        l.push(2)
-        assert len(l) == 2
+        >>> l = List()
 
-        l.push(3)
-        assert len(l) == 3
+        >>> assert len(l) == 0
+
+        >>> l.push(1)
+        >>> assert len(l) == 1
+
+        >>> l.push(2)
+        >>> assert len(l) == 2
+
+        >>> l.push(3)
+        >>> assert len(l) == 3
         '''
         return self.__length
-
 
     def length(self) -> int:
         '''
         Returns the length of the list.
-        
+
         # Examples
 
-        from list import List
+        >>> from list import List
 
-        l = List()
-        
-        assert len(l) == 0
-        
-        l.push(1)
-        assert len(l) == 1
-        
-        l.push(2)
-        assert len(l) == 2
+        >>> l = List()
 
-        l.push(3)
-        assert len(l) == 3
+        >>> assert len(l) == 0
+
+        >>> l.push(1)
+        >>> assert len(l) == 1
+
+        >>> l.push(2)
+        >>> assert len(l) == 2
+
+        >>> l.push(3)
+        >>> assert len(l) == 3
         '''
         return self.__length
 
-
-    def __eq__(self, other: 'List'):
+    def __eq__(self, other: 'List') -> bool:
         '''
         Comparing two lists.
 
@@ -86,12 +84,12 @@ class List:
 
         # Examples
 
-        from list import List
+        >>> from list import List
 
-        l1 = List()
-        l2 = List()
-        
-        assert l1 == l2
+        >>> l1 = List()
+        >>> l2 = List()
+
+        >>> assert l1 == l2
         '''
         curr_node = self.__head
 
@@ -110,7 +108,6 @@ class List:
 
         return True
 
-    
     def __str__(self) -> str:
         '''
         Creates a string from the List.
@@ -123,12 +120,12 @@ class List:
         from list import List
 
         l = List()
-        
+
         assert str(l) == '[]'
-        
+
         l.push('A')
         l.push('B')
-        
+
         assert str(l) == '[A, B]'
         '''
         string = '['
@@ -136,15 +133,15 @@ class List:
         curr_node = self.__head
 
         while curr_node:
-            string += curr_node.elem + ', ' * (curr_node.next != None) 
-            curr_node = curr_node.next 
-        
+            string += str(curr_node.elem) + ', ' * (curr_node.next is not None)
+            curr_node = curr_node.next
+
         string += ']'
 
         return string
 
     # R
-    def __getitem__(self, index):
+    def __getitem__(self, index: int) -> Any:
         '''
         Gets element by index.
 
@@ -156,7 +153,7 @@ class List:
         from list import List
 
         l = List.from_array(['A', 'B'])
-        
+
         assert l[0] == 'A'
         assert l[1] == 'B'
         '''
@@ -169,7 +166,7 @@ class List:
             count += 1
 
     # U
-    def __setitem__(self, index, elem):
+    def __setitem__(self, index: int, elem: Any) -> None:
         '''
         Sets element by index.
 
@@ -181,17 +178,16 @@ class List:
         from list import List
 
         l = List.from_array(['A', 'B'])
-        
+
         l[0] = 'B'
         assert l[0] == 'B'
-        
+
         l[1] = 'A'
         assert l[1] == 'A'
         '''
         self.__check_index(index)
 
         self.__find_node(index).elem = elem
-        
 
     def __iter__(self):
         '''
@@ -199,29 +195,30 @@ class List:
         '''
         return _ListIterator(self.__head)
 
-
-    def __check_index(self, index, include_border = 0):
+    def __check_index(self, index, include_border=0) -> None:
         '''
         Checks the entered index in the bounds.
 
         # Bounds
-        - [0; len), include_border = 0: Used by all methods that require checking indexes, except insert()
-        - [0; len], include_border = 1: Used by insert() method
+        - [0; len), include_border = 0:
+            Used by all methods that require checking indexes, except insert()
+        - [0; len], include_border = 1:
+            Used by insert() method
 
         # Exceptions
         Raises an error if the index is outside the of the borders.
 
         # Examples
-        
+
         from list import List
 
         l = List()
-        
+
         l.push('X')
-        
+
         # success
         assert l[0] == 'X'
-        
+
         # fail
         actual_exception = None
 
@@ -232,10 +229,10 @@ class List:
         assert "Index 1 is out of bound" in str(actual_exception)
         '''
         if index > self.__length - 1 + include_border or index < 0:
-            raise Exception(f"Index {index} is out of bound! List length: {self.__length}")
+            raise Exception(
+                f"Index {index} is out of bound! List length: {self.__length}")
 
-    
-    def __find_node(self, index) -> _Node:
+    def __find_node(self, index: int) -> _Node:
         '''
         Finds node by index.
         '''
@@ -249,9 +246,9 @@ class List:
 
         return curr_node
 
-
     # C
-    def push(self, elem):
+
+    def push(self, elem) -> None:
         '''
         Appends a new element to the back of the list.
 
@@ -268,12 +265,12 @@ class List:
         '''
         self.insert(self.__length, elem)
 
-
     # C
-    def insert(self, index, elem):
+
+    def insert(self, index: int, elem) -> None:
         '''
         Inserts a new element into the list at the entered index.
-        
+
         # Exceptions
         Raises exception if 'index > len'.
 
@@ -294,33 +291,23 @@ class List:
         '''
         self.__check_index(index, 1)
 
-
         # empty list
-        if self.__head == None:
+        if self.__head is None:
             self.__head = self.__tail = _Node(elem)
-            self.__length += 1 # length
-            return
-
-        # insert first element
-        if index == 0:
+        elif index == 0:
             self.__head = _Node(elem, self.__head)
-            self.__length += 1 # length
-            return
-
-        # insert in tail
-        if index == self.__length: # tail
+        elif index == self.__length:
             self.__tail.next = _Node(elem)
             self.__tail = self.__tail.next
-            self.__length += 1 # length
-            return
+        else:
+            prev_node = self.__find_node(index - 1)
+            prev_node.next = _Node(elem, prev_node.next)
 
-        prev_node = self.__find_node(index - 1)
-        prev_node.next = _Node(elem, prev_node.next)
         self.__length += 1
-
+        return
 
     # D
-    def remove(self, index):
+    def remove(self, index: int) -> Any:
         '''
         Removes the element at entered index and returns it.
 
@@ -338,24 +325,20 @@ class List:
         '''
         self.__check_index(index)
 
+        if index > 0:
+            prev_node = self.__find_node(index - 1)
+            elem = prev_node.next.elem
 
-        if index == 0:
+            if index == self.__length - 1:
+                self.__tail = prev_node
+
+            prev_node.next = prev_node.next.next
+        else:
             elem = self.__head.elem
             self.__head = self.__head.next
-            self.__length -= 1
-            return elem
 
-        prev_node = self.__find_node(index - 1)
-        elem = prev_node.next.elem
-
-        if index == self.__length - 1:
-            self.__tail = prev_node
-        
-        prev_node.next = prev_node.next.next
         self.__length -= 1
-        
         return elem
-
 
     def find(self, elem) -> int | None:
         '''
@@ -368,7 +351,7 @@ class List:
         l = List.from_array(['A', 'B', 'C'])
 
         assert l.find('B') == 1
-        assert l.find('D') == None        
+        assert l.find('D') == None
         '''
         for index, value in enumerate(self):
             if value == elem:
@@ -376,14 +359,12 @@ class List:
 
         return None
 
-    
     def print(self):
         '''
         Prints list.
         '''
-        print(str(self))
+        print(self)
 
-    
     def from_array(array: list) -> 'List':
         '''
         Creates list from array.
@@ -401,9 +382,29 @@ class List:
 
         assert l1 == l2
         '''
-        l = List()
+        list = List()
 
         for elem in array:
-            l.push(elem)
+            list.push(elem)
 
-        return l
+        return list
+
+    def repeat(n_elements: int, inserted_element: Any) -> 'List':
+        '''
+        Creates a new List: with insterted_element elements,
+        and n_elements length.
+
+        # Examples
+
+        from list import List
+
+        l = List.repeat(4, None)
+
+        assert str(l) == "[None, None, None, None]"
+        '''
+        list = List()
+
+        for _ in range(n_elements):
+            list.push(inserted_element)
+
+        return list

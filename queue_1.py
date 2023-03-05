@@ -4,8 +4,7 @@ from list import List
 # FIFO
 class Queue:
     def __init__(self):
-        self.list = List()   
-
+        self.list = List()
 
     def __len__(self):
         '''
@@ -13,13 +12,11 @@ class Queue:
         '''
         return self.list.length()
 
-
     def length(self):
         '''
         Returns the length of the queue.
         '''
         return self.list.length()
-
 
     def __eq__(self, other: 'List'):
         '''
@@ -30,7 +27,6 @@ class Queue:
         '''
         return self.list.__eq__(other)
 
-
     def __getitem__(self, index):
         '''
         Gets element by index.
@@ -39,7 +35,6 @@ class Queue:
         Raises exception if 'index >= len'.
         '''
         return self.list.__getitem__(index)
-
 
     def __setitem__(self, index, elem):
         '''
@@ -50,7 +45,6 @@ class Queue:
         '''
         self.list.__setitem__(index, elem)
 
-
     def __str__(self) -> str:
         '''
         Creates a string from the queue.
@@ -60,23 +54,21 @@ class Queue:
         '''
         return str(self.list)
 
-
     def __iter__(self):
         '''
         Returns the iterator of the queue.
         '''
         return self.list.__iter__()
 
-
     def pop(self):
         '''
         Removes the front element and returns it.
 
         # Exceptions
-        Raises exception if an attempt is made to remove an element from an empty queue.
+        Raises exception if an attempt is made to remove an element from
+        an empty queue.
         '''
         return self.list.remove(0)
-
 
     def push(self, elem):
         '''
@@ -84,7 +76,6 @@ class Queue:
         '''
         self.list.push(elem)
 
-    
     def peek(self):
         '''
         Gets the front element.
@@ -94,13 +85,11 @@ class Queue:
         '''
         return self.__getitem__(0)
 
-    
     def find(self, elem):
         '''
         Tries to find the entered element in the queue and return its index.
         '''
         return self.list.find(elem)
-
 
     def from_array(array: list):
         '''
