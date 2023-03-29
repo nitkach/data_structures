@@ -12,20 +12,36 @@ class SortedListDict:
     def __str__(self) -> str:
         return self.__list.__str__()
 
+    def __len__(self) -> int:
+        return self.__list.length()
+
     def __find_gte_or_length(self, key: str) -> int:
         '''
         gte means greater or equal
         '''
-        # TODO: binary search
+        # binary search
 
-        index = 0
+        left = 0  # left border
+        right = len(self.__list) - 1  # right border
+        middle = 0
 
-        while index < self.__list.length() and self.__list[index][0] < key:
-            index += 1
+        while left <= right:
+            middle = (left + right)//2
 
-        return index
+            if self.__list[middle][0] == key:
+                return middle
+            elif key > self.__list[middle][0]:
+                left += 1
+            else:
+                right -= 1
+
+        # check if List is empty to avoid exception
+        return middle if len(self.__list) == 0 or key < self.__list[middle][0] else middle + 1
 
     def get(self, key: str) -> Any | None:
+        '''
+        Gets value in the tuple by searching by the key
+        '''
         index = self.__find_gte_or_length(key)
 
         if index == self.__list.length():
@@ -34,6 +50,9 @@ class SortedListDict:
         return self.__list[index][1]
 
     def set(self, key: str, value: Any) -> Any | None:
+        '''
+        Inserts a new element into a sorted list.
+        '''
         index = self.__find_gte_or_length(key)
 
         if index == self.__list.length() or key != self.__list[index][0]:
@@ -45,14 +64,23 @@ class SortedListDict:
         return temp
 
     def remove(self, key: str) -> Any:
-        index = self.__list.find(key)
+        '''
+        Removes the element by the key and returns value.
+        '''
+        if self.__list.length() == 0:
+            return None
 
-        if index is not None:
+        index = self.__find_gte_or_length(key)
+
+        if index != self.__list.length() and self.__list[index][0] == key:
             return self.__list.remove(index)[1]
 
-        return index
+        return None
 
     def from_array(array):
+        '''
+        Creates a sorted list from array.
+        '''
         d = SortedListDict()
 
         for key, value in array:
