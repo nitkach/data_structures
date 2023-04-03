@@ -90,6 +90,22 @@ def test_get_from_empty():
     assert d.get('aaa') is None
 
 
+def test_get_non_existing_head_element_among_one_element():
+    d = SortedListDict()
+
+    d.set('bbb', 20)
+
+    assert d.get('aaa') is None
+
+
+def test_get_non_existing_tail_element_among_one_element():
+    d = SortedListDict()
+
+    d.set('bbb', 20)
+
+    assert d.remove('ccc') is None
+
+
 def test_get_non_existent_key():
     d = create_sorted_dict()
 

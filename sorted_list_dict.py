@@ -31,11 +31,10 @@ class SortedListDict:
             if self.__list[middle][0] == key:
                 return middle
             elif key > self.__list[middle][0]:
-                left += 1
+                left = middle + 1
             else:
-                right -= 1
+                right = middle - 1
 
-        # check if List is empty to avoid exception
         return middle if len(self.__list) == 0 or key < self.__list[middle][0] else middle + 1
 
     def get(self, key: str) -> Any | None:
@@ -44,7 +43,7 @@ class SortedListDict:
         '''
         index = self.__find_gte_or_length(key)
 
-        if index == self.__list.length():
+        if index == self.__list.length() or self.__list[index][0] != key:
             return None
 
         return self.__list[index][1]
