@@ -31,7 +31,7 @@ def test_push_to_empty():
 
     q.push('X')
 
-    assert q == Queue.from_array(['X'])
+    assert str(q) == "[X]"
 
 
 def test_push_to_non_empty():
@@ -39,7 +39,7 @@ def test_push_to_non_empty():
 
     q.push('X')
 
-    assert q == Queue.from_array(['p', 'o', 'n', 'y', 'X'])
+    assert str(q) == "[p, o, n, y, X]"
 
 
 def test_peek_the_empty_fail():
@@ -116,7 +116,7 @@ def test_string_non_empty():
 def test_find_elem_in_empty():
     q = Queue()
 
-    assert q.find('X') == None
+    assert q.find('X') is None
 
 
 def test_find_existing_elem_in_non_empty():
@@ -128,4 +128,4 @@ def test_find_existing_elem_in_non_empty():
 def test_find_non_existing_elem_in_non_empty_fail():
     q = create_queue()
 
-    assert q.find('X') == None
+    assert q.find('X') is None
