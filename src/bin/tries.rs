@@ -27,9 +27,7 @@ impl Display for Trie {
                 let firsts = main_node.child.iter().take(main_node.child.len() - 1);
 
                 for (symbol, node) in firsts {
-                    // make indent:
-                    // │  ...
-                    write!(f, "{}", indent.get_indent())?;
+                    write!(f, "{}", indent.get())?;
 
                     write!(f, "├──{symbol}")?;
 
@@ -44,7 +42,7 @@ impl Display for Trie {
                     // dbg!(&indent);
 
                     recursive(node, f, indent)?;
-                    indent.remove_indent();
+                    indent.truncate();
                 }
 
                 // remove nesting level, otherwise the last node will have
@@ -55,7 +53,7 @@ impl Display for Trie {
 
             let last = &main_node.child.iter().last();
             if let Some((symbol, node)) = last {
-                write!(f, "{}", indent.get_indent())?;
+                write!(f, "{}", indent.get())?;
 
                 write!(f, "└──{symbol}")?;
 
@@ -67,7 +65,7 @@ impl Display for Trie {
 
                 indent.add_spaces();
                 recursive(node, f, indent)?;
-                indent.remove_indent();
+                indent.truncate();
             }
 
             Ok(())
@@ -85,31 +83,32 @@ impl Display for Trie {
 #[derive(Debug)]
 struct Indent {
     indent: String,
-    index: usize,
 }
 
 impl Indent {
     fn new() -> Self {
-        Indent { indent: String::new(), index: 0 }
+        Self {
+            indent: String::new(),
+        }
     }
 
-    fn get_indent(&self) -> &str {
+    fn get(&self) -> &str {
         &self.indent
     }
 
     fn add_spaces(&mut self) {
-        self.indent.push_str("   ");
-        self.index += 3;
+        let indent = "   ";
+        self.indent.push_str(indent);
     }
 
     fn add_bar(&mut self) {
         self.indent.push_str("│  ");
-        self.index += 3;
     }
 
-    fn remove_indent(&mut self) {
-        self.index -= 3;
-        self.indent.truncate(self.index);
+    fn truncate(&mut self) {
+        for _ in 0..3 {
+            self.indent.pop().expect("for each call add indent, 3 characters are added");
+        }
     }
 }
 
@@ -254,14 +253,14 @@ impl Node {
 fn main() {
     let mut tries = Trie::new();
 
-    tries.insert("");
-    tries.insert("mare");
-    tries.insert("mara");
-    tries.insert("mars");
-    tries.insert("mares");
-    tries.insert("maer");
-    tries.insert("max");
-    tries.insert("maresex");
+    // tries.insert("");
+    // tries.insert("mare");
+    // tries.insert("mara");
+    // tries.insert("mars");
+    // tries.insert("mares");
+    // tries.insert("maer");
+    // tries.insert("max");
+    // tries.insert("maresex");
     // tries.insert("mareble");
     // tries.insert("maredorable");
     // tries.insert("marefoo");
@@ -281,11 +280,11 @@ fn main() {
     // tries.insert("fluxx");
     // tries.insert("fluxxxx");
 
-    // tries.insert("foo");
-    // tries.insert("foobar");
-    // tries.insert("bar");
-    // tries.insert("fooqox");
-    // tries.insert("foobaz");
+    tries.insert("foo");
+    tries.insert("foobar");
+    tries.insert("bar");
+    tries.insert("fooqox");
+    tries.insert("foobaz");
 
     // tries.contains("snow").unwrap();
     // println!("{}", tries.contains("maredorbla"));

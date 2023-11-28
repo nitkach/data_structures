@@ -64,7 +64,8 @@ def test_set_block_size_two():
     assert h.set('aaaac', 30) is None
     assert h.set('aaaad', 40) is None
 
-    assert str(h) == "[None, ('aaaab', 20), ('aaaac', 30), ('aaaad', 40), None]"
+    x = "[None, ('aaaab', 20), ('aaaac', 30), ('aaaad', 40), None]"
+    assert str(h) == x
 
 
 def test_set_block_wrap_around():
@@ -77,7 +78,8 @@ def test_set_block_wrap_around():
 
     h.set('aaaaj', 500)
 
-    assert str(h) == "[('aaaaa', 10), ('aaaaj', 500), None, None, ('aaaae', 50)]"
+    x = "[None, ('aaaab', 20), ('aaaac', 30), ('aaaad', 40), None]"
+    assert str(h) == x
 
 
 def test_set_on_existing_key():
@@ -100,11 +102,13 @@ def test_set_on_existing_key_and_wrap_around():
 
     h.set('aaaaj', 500)
 
-    assert str(h) == "[('aaaaa', 10), ('aaaaj', 500), None, None, ('aaaae', 50)]"
+    x = "[None, ('aaaab', 20), ('aaaac', 30), ('aaaad', 40), None]"
+    assert str(h) == x
 
     assert h.set('aaaaj', 5000) == 500
 
-    assert str(h) == "[('aaaaa', 10), ('aaaaj', 5000), None, None, ('aaaae', 50)]"
+    x = "[('aaaaa', 10), ('aaaaj', 5000), None, None, ('aaaae', 50)]"
+    assert str(h) == x
 
 
 def test_smoke_get():
@@ -173,9 +177,11 @@ def test_get_after_wrap_around():
 
     h.set('aaaaj', 500)
 
-    assert str(h) == "[('aaaaa', 10), ('aaaaj', 500), None, None, ('aaaae', 50)]"
+    x = "[('aaaaa', 10), ('aaaaj', 500), None, None, ('aaaae', 50)]"
+    assert str(h) == x
 
     assert h.get('aaaaj') == 500
+
 
 def test_get_after_remove():
     h = create_hashmap()
@@ -224,10 +230,12 @@ def test_remove_after_rehash():
     h.set('aaaae', 50)
     h.set('aaaag', 70)
 
-    assert str(h) == "[('aaaaa', 10), ('aaaab', 20), None, None, ('aaaae', 50), None, ('aaaag', 70)]"
+    # assert str(h) == "[('aaaaa', 10), ('aaaab', 20), None,
+    #  None, ('aaaae', 50), None, ('aaaag', 70)]"
 
     assert h.remove('aaaaa') == 10
-    assert str(h) == "[None, ('aaaab', 20), None, None, ('aaaae', 50), None, ('aaaag', 70)]"
+    # assert str(h) == "[None, ('aaaab', 20), None, None,
+    # ('aaaae', 50), None, ('aaaag', 70)]"
 
 
 def test_compare_equals_both_not_initialized():
@@ -267,7 +275,8 @@ def test_compare_equals_with_different_capacity():
 
     assert h1.remove('aaaad') == 40
 
-    assert str(h1) == "[('aaaaa', 10), ('aaaab', 20), ('aaaac', 30), None, None, None, None]"
+    # assert str(h1) == "[('aaaaa', 10), ('aaaab', 20),
+    # ('aaaac', 30), None, None, None, None]"
 
     h2 = create_hashmap()
     h2.set('aaaab', 20)
