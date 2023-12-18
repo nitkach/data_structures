@@ -48,6 +48,12 @@ impl Node {
     }
 }
 
+enum IndexType {
+    Head,
+    Middle(Rc<RefCell<Node>>),
+    Tail,
+}
+
 impl SingleLinkedList {
     fn new() -> Self {
         Self {
@@ -55,6 +61,23 @@ impl SingleLinkedList {
             len: 0,
         }
     }
+
+    // TODO make more type: Insert(index, Head/Middle/Tail/Push)
+    // fn check_index(&self, index: usize, include: bool) -> IndexType {
+    //     let include = if include { 1 } else { 0 };
+    //     if index > self.len - 1 + include {
+    //         let message = format!(
+    //             "Index {index} is out of bound. List length: {}",
+    //             self.len
+    //         );
+
+    //         panic!("{}", message);
+    //     };
+
+    //     if index == 0 {
+    //         IndexType::Head
+    //     } else if index == self.len
+    // }
 
     fn insert(&mut self, index: usize, to_insert: usize) {
         // TODO use enum IndexType { Head, Middle, Tail }?
@@ -149,7 +172,7 @@ impl SingleLinkedList {
     fn remove(&mut self, index: usize) -> usize {
         if index >= self.len {
             let message = format!(
-                "Failed to remove at index {index}. Index must be less or equal list length {}",
+                "Failed to remove at index {index}. Index must be less list length {}",
                 self.len
             );
 
@@ -158,7 +181,7 @@ impl SingleLinkedList {
 
         let (head, tail) = match self.head_tail {
             Some((ref head, ref tail)) => (head.clone(), tail.clone()),
-            None => todo!(),
+            None => unreachable!(),
         };
 
         if index == 0 {
@@ -239,7 +262,7 @@ impl SingleLinkedList {
     fn set(&mut self, index: usize, value: usize) {
         if index >= self.len {
             let message = format!(
-                "Failed to set at index {index}. Index must be less or equal list length {}",
+                "Failed to set at index {index}. Index must be less list length {}",
                 self.len
             );
 
@@ -254,7 +277,7 @@ impl SingleLinkedList {
     fn get(&self, index: usize) -> usize {
         if index >= self.len {
             let message = format!(
-                "Failed to set at index {index}. Index must be less or equal list length {}",
+                "Failed to get at index {index}. Index must be less list length {}",
                 self.len
             );
 
@@ -280,8 +303,28 @@ impl FromIterator<usize> for SingleLinkedList {
 }
 
 fn main() {
-    // let now = std::time::Instant::now();
-    // println!("Time elapsed: {:?}", now.elapsed());
+    // CRUD
+    // C - CREATE
+    // R - READ
+    // U - UPDATE
+    // D - DELETE
+
+    let mut std_sll = std::collections::LinkedList::new();
+
+    let now = std::time::Instant::now();
+    for elem in 0..1_000_000 {
+        std_sll.push_back(elem);
+    }
+    println!("Time elapsed: {:?}", now.elapsed());
+
+    let mut sll = SingleLinkedList::new();
+    let now = std::time::Instant::now();
+    for elem in 0..1_000_000 {
+        sll.push(elem);
+    }
+    println!("Time elapsed: {:?}", now.elapsed());
+
+    // println!("{}", sll);
 }
 
 #[cfg(test)]

@@ -239,7 +239,7 @@ fn main() {
                   \
                    28
     */
-    dbg!(&tree);
+    // dbg!(&tree);
 
     println!("\nremoved: {}", tree.remove(5).unwrap());
     tree.traverse();
@@ -254,5 +254,5 @@ fn main() {
                   /  \                /  \
                 28    31            28    31
     */
-    dbg!(tree);
+    // dbg!(tree);
 }
