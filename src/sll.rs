@@ -1,46 +1,51 @@
-use std::{cell::RefCell, fmt::Display, rc::Rc};
+use std::{
+    borrow::Borrow,
+    cell::{Ref, RefCell},
+    fmt::Display,
+    rc::Rc,
+};
 
 #[derive(Debug)]
-struct SingleLinkedList {
-    head_tail: Option<(Rc<RefCell<Node>>, Rc<RefCell<Node>>)>,
+pub struct SingleLinkedList<T: Default + Display> {
+    head_tail: Option<(Rc<RefCell<Node<T>>>, Rc<RefCell<Node<T>>>)>,
     len: usize,
 }
 
-impl Display for SingleLinkedList {
+impl<T: Default + Display> Display for SingleLinkedList<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str("[")?;
         let mut current = match &self.head_tail {
             Some((head, _)) => Rc::clone(&head),
             None => return f.write_str("]"),
         };
-        write!(f, "{}", current.borrow())?;
-        while let Some(next_node) = &Rc::clone(&current).borrow().next {
-            write!(f, ", {}", next_node.borrow())?;
-            current = Rc::clone(next_node);
+        write!(f, "{}", RefCell::borrow(&current))?;
+        while let Some(next_node) = &RefCell::borrow(&Rc::clone(&current)).next {
+            write!(f, ", {}", RefCell::borrow(&next_node))?;
+            current = Rc::clone(&next_node);
         }
 
         f.write_str("]")
     }
 }
 
-impl Display for Node {
+impl<T: Display + Default> Display for Node<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.value)
     }
 }
 
 #[derive(Debug)]
-struct Node {
-    next: Option<Rc<RefCell<Node>>>,
-    value: usize,
+struct Node<T: Default + Display> {
+    next: Option<Rc<RefCell<Node<T>>>>,
+    value: T,
 }
 
-impl Node {
-    fn new(value: usize) -> Rc<RefCell<Node>> {
+impl<T: Default + Display> Node<T> {
+    fn new(value: T) -> Rc<RefCell<Node<T>>> {
         Rc::new(RefCell::new(Node { next: None, value }))
     }
 
-    fn with_next(next: Rc<RefCell<Node>>, value: usize) -> Rc<RefCell<Node>> {
+    fn with_next(next: Rc<RefCell<Node<T>>>, value: T) -> Rc<RefCell<Node<T>>> {
         Rc::new(RefCell::new(Node {
             next: Some(next),
             value,
@@ -48,14 +53,14 @@ impl Node {
     }
 }
 
-enum IndexType {
-    Head,
-    Middle(Rc<RefCell<Node>>),
-    Tail,
-}
+// enum IndexType {
+//     Head,
+//     Middle(Rc<RefCell<Node>>),
+//     Tail,
+// }
 
-impl SingleLinkedList {
-    fn new() -> Self {
+impl<T: Default + Display> SingleLinkedList<T> {
+    pub fn new() -> Self {
         Self {
             head_tail: None,
             len: 0,
@@ -79,7 +84,7 @@ impl SingleLinkedList {
     //     } else if index == self.len
     // }
 
-    fn insert(&mut self, index: usize, to_insert: usize) {
+    pub fn insert(&mut self, index: usize, to_insert: T) {
         // TODO use enum IndexType { Head, Middle, Tail }?
         if index > self.len {
             let message = format!(
@@ -94,10 +99,10 @@ impl SingleLinkedList {
         let Some((ref head, ref tail)) = self.head_tail else {
             let new_node = Node::new(to_insert);
 
-                self.head_tail = Some((new_node.clone(), new_node.clone()));
-                self.len += 1;
+            self.head_tail = Some((new_node.clone(), new_node.clone()));
+            self.len += 1;
 
-                return;
+            return;
         };
 
         if index == 0 {
@@ -121,9 +126,7 @@ impl SingleLinkedList {
             return;
         }
 
-        let cur_node = self
-            .find_node(index - 1)
-            .expect("index must be less than len after previous check");
+        let cur_node = self.find_node(index - 1);
 
         let mut borrow_cur_node = cur_node.borrow_mut();
 
@@ -139,20 +142,20 @@ impl SingleLinkedList {
 
     // TODO -> Rc<RefCell<Node>>>
     // and use enum type
-    fn find_node(&self, index: usize) -> Option<Rc<RefCell<Node>>> {
+    fn find_node(&self, index: usize) -> Rc<RefCell<Node<T>>> {
         if index > self.len {
-            return None;
+            panic!()
         }
 
         let mut cur_node = match self.head_tail {
             Some((ref cur_node, _)) => cur_node.clone(),
-            None => return None,
+            None => unreachable!(),
         };
         let mut cur_index = 0;
 
         while cur_index < index {
             cur_node = {
-                let borrow_cur_node = cur_node.borrow();
+                let borrow_cur_node = RefCell::borrow(&*cur_node);
                 cur_index += 1;
 
                 match borrow_cur_node.next {
@@ -162,14 +165,14 @@ impl SingleLinkedList {
             }
         }
 
-        Some(cur_node)
+        cur_node
     }
 
-    fn push(&mut self, to_push: usize) {
+    pub fn push(&mut self, to_push: T) {
         self.insert(self.len, to_push);
     }
 
-    fn remove(&mut self, index: usize) -> usize {
+    pub fn remove(&mut self, index: usize) -> T {
         if index >= self.len {
             let message = format!(
                 "Failed to remove at index {index}. Index must be less list length {}",
@@ -185,30 +188,32 @@ impl SingleLinkedList {
         };
 
         if index == 0 {
-            let head = head.borrow();
+            let mut head = RefCell::borrow_mut(&head);
 
             self.len -= 1;
 
             match head.next {
                 Some(ref next_node) => {
                     self.head_tail = Some((next_node.clone(), tail));
-                    return head.value;
+                    return std::mem::take(&mut head.value);
                 }
                 None => {
                     self.head_tail = None;
-                    return head.value;
+                    return std::mem::take(&mut head.value);
                 }
             };
         } else if index == self.len - 1 {
-            let prev_node = self.find_node(index - 1).expect("previous node must exist");
+            let prev_node = self.find_node(index - 1);
 
-            let value = prev_node
-                .borrow()
-                .next
-                .as_ref()
-                .expect("node to remove must exist")
-                .borrow()
-                .value;
+            let value = std::mem::take(
+                &mut RefCell::borrow_mut(
+                    RefCell::borrow_mut(&prev_node)
+                        .next
+                        .as_ref()
+                        .expect("node to remove must exist"),
+                )
+                .value,
+            );
 
             prev_node.borrow_mut().next = None;
             self.head_tail = Some((head, prev_node));
@@ -218,21 +223,19 @@ impl SingleLinkedList {
             return value;
         };
 
-        let prev_node = self
-            .find_node(index - 1)
-            .expect("index must be less than len after previous check");
+        let prev_node = self.find_node(index - 1);
 
         let value;
 
         let next_node = {
-            let to_remove = match &prev_node.borrow().next {
+            let to_remove = match &RefCell::borrow(&prev_node).next {
                 Some(to_remove) => to_remove.clone(),
                 None => unreachable!(),
             };
 
-            let to_remove = to_remove.borrow();
+            let mut to_remove = RefCell::borrow_mut(&to_remove);
 
-            value = to_remove.value;
+            value = std::mem::take(&mut to_remove.value);
 
             let x = match &to_remove.next {
                 Some(next) => Some(next.clone()),
@@ -255,11 +258,11 @@ impl SingleLinkedList {
         value
     }
 
-    fn pop(&mut self) -> usize {
+    pub fn pop(&mut self) -> T {
         self.remove(self.len - 1)
     }
 
-    fn set(&mut self, index: usize, value: usize) {
+    pub fn set(&mut self, index: usize, value: T) {
         if index >= self.len {
             let message = format!(
                 "Failed to set at index {index}. Index must be less list length {}",
@@ -269,31 +272,42 @@ impl SingleLinkedList {
             panic!("{}", message);
         };
 
-        let node = self.find_node(index).expect("node must exist");
+        let node = self.find_node(index);
 
         node.borrow_mut().value = value;
     }
 
-    fn get(&self, index: usize) -> usize {
-        if index >= self.len {
-            let message = format!(
-                "Failed to get at index {index}. Index must be less list length {}",
-                self.len
-            );
+    // pub fn get(&self, index: usize) -> Rc<RefCell<Node<T>>> {
+    //     if index >= self.len {
+    //         let message = format!(
+    //             "Failed to get at index {index}. Index must be less list length {}",
+    //             self.len
+    //         );
 
-            panic!("{}", message);
-        };
+    //         panic!("{}", message);
+    //     };
 
-        let node = self.find_node(index).expect("node must exist");
+    //     let Some((ref head, _)) = &self.head_tail else {
+    //         unreachable!();
+    //     };
 
-        let value = node.borrow().value;
+    //     let mut node = head.clone();
+    //     for _ in 0..index {
+    //         node = RefCell::borrow(head).next.as_ref().unwrap().clone();
+    //     }
 
-        value
+    //     node.clone()
+    // }
+
+    fn peek(&self) -> Option<Ref<T>> {
+        self.head_tail
+            .as_ref()
+            .map(|(_, tail)| Ref::map(RefCell::borrow(&tail), |node| &node.value))
     }
 }
 
-impl FromIterator<usize> for SingleLinkedList {
-    fn from_iter<I: IntoIterator<Item = usize>>(iter: I) -> Self {
+impl<T: Default + Display> FromIterator<T> for SingleLinkedList<T> {
+    fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
         let mut sll = SingleLinkedList::new();
         for item in iter {
             sll.push(item);
@@ -302,38 +316,13 @@ impl FromIterator<usize> for SingleLinkedList {
     }
 }
 
-fn main() {
-    // CRUD
-    // C - CREATE
-    // R - READ
-    // U - UPDATE
-    // D - DELETE
-
-    let mut std_sll = std::collections::LinkedList::new();
-
-    let now = std::time::Instant::now();
-    for elem in 0..1_000_000 {
-        std_sll.push_back(elem);
-    }
-    println!("Time elapsed: {:?}", now.elapsed());
-
-    let mut sll = SingleLinkedList::new();
-    let now = std::time::Instant::now();
-    for elem in 0..1_000_000 {
-        sll.push(elem);
-    }
-    println!("Time elapsed: {:?}", now.elapsed());
-
-    // println!("{}", sll);
-}
-
 #[cfg(test)]
 mod tests {
     use expect_test::{expect, Expect};
 
     use super::*;
 
-    fn create_list() -> SingleLinkedList {
+    fn create_list() -> SingleLinkedList<usize> {
         SingleLinkedList::from_iter([1, 2, 3, 4, 5])
     }
 
@@ -353,7 +342,7 @@ mod tests {
 
     #[test]
     fn empty() {
-        let actual = SingleLinkedList::new().to_string();
+        let actual = SingleLinkedList::<usize>::new().to_string();
         let expected = expect![[r#"[]"#]];
         expected.assert_eq(&actual);
     }
@@ -505,26 +494,26 @@ mod tests {
         assert_eq(&format!("{value}, {}", sll.to_string()), expect!["1, []"]);
     }
 
-    #[test]
-    fn get_head_from_non_empty() {
-        let sll = create_list();
+    // #[test]
+    // fn get_head_from_non_empty() {
+    //     let sll = create_list();
 
-        assert_eq(&sll.get(0).to_string(), expect!["1"]);
-    }
+    //     assert_eq(&sll.get(0).to_string(), expect!["1"]);
+    // }
 
-    #[test]
-    fn get_middle_from_non_empty() {
-        let sll = create_list();
+    // #[test]
+    // fn get_middle_from_non_empty() {
+    //     let sll = create_list();
 
-        assert_eq(&sll.get(2).to_string(), expect!["3"]);
-    }
+    //     assert_eq(&sll.get(2).to_string(), expect!["3"]);
+    // }
 
-    #[test]
-    fn get_tail_from_non_empty() {
-        let sll = create_list();
+    // #[test]
+    // fn get_tail_from_non_empty() {
+    //     let sll = create_list();
 
-        assert_eq(&sll.get(sll.len - 1).to_string(), expect!["5"]);
-    }
+    //     assert_eq(&sll.get(sll.len - 1).to_string(), expect!["5"]);
+    // }
 
     #[test]
     fn set_head_non_empty() {

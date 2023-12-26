@@ -1,21 +1,21 @@
 #[derive(Debug)]
-struct Tree {
+pub struct Tree {
     root: Option<Box<Node>>,
 }
 
 #[derive(Debug)]
 struct Node {
-    value: i32,
+    value: usize,
     left: Option<Box<Node>>,
     right: Option<Box<Node>>,
 }
 
 impl Tree {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self { root: None }
     }
 
-    fn insert(&mut self, to_insert: i32) {
+    pub fn insert(&mut self, to_insert: usize) {
         let mut node = match self.root {
             Some(ref mut node) => node,
             None => return self.root = Some(Box::new(Node::new(to_insert))),
@@ -42,7 +42,7 @@ impl Tree {
         }
     }
 
-    fn contains(&self, to_find: i32) -> bool {
+    pub fn contains(&self, to_find: usize) -> bool {
         let mut node = match &self.root {
             Some(node) => node,
             None => return false,
@@ -68,14 +68,16 @@ impl Tree {
         }
     }
 
-    fn traverse(&self) {
+    pub fn traverse(&self) -> String {
+        let mut buf = String::new();
         let Some(ref node) = self.root else {
-            return;
+            return buf;
         };
-        node.traverse();
+        node.traverse(&mut buf);
+        buf
     }
 
-    fn remove(&mut self, to_remove: i32) -> Option<i32> {
+    pub fn remove(&mut self, to_remove: usize) -> Option<usize> {
         // reference to node
         let ref_remove_node = Self::find_node(&mut self.root, to_remove)?;
 
@@ -138,7 +140,7 @@ impl Tree {
         Some(removed_value)
     }
 
-    fn find_node(node: &mut Option<Box<Node>>, needle: i32) -> Option<&mut Option<Box<Node>>> {
+    fn find_node(node: &mut Option<Box<Node>>, needle: usize) -> Option<&mut Option<Box<Node>>> {
         let mut cur = node;
         loop {
             match cur.as_mut()?.value.cmp(&needle) {
@@ -169,7 +171,7 @@ impl Tree {
 }
 
 impl Node {
-    fn new(value: i32) -> Self {
+    fn new(value: usize) -> Self {
         Self {
             value,
             left: None,
@@ -177,32 +179,48 @@ impl Node {
         }
     }
 
-    fn traverse(&self) {
+    fn traverse(&self, buf: &mut String) {
         if let Some(ref node) = self.left {
-            Self::traverse(node)
+            Self::traverse(node, buf)
         }
-        println!("{}", self.value);
-
+        buf.push_str(&format!("{} ", self.value));
         if let Some(ref node) = self.right {
-            Self::traverse(node)
+            Self::traverse(node, buf)
         }
     }
 }
 
-fn main() {
-    let mut tree = Tree::new();
+#[cfg(test)]
+mod tests {
+    use expect_test::expect;
 
-    tree.insert(5);
-    tree.insert(2);
-    tree.insert(8);
-    tree.insert(3);
-    tree.insert(1);
-    tree.insert(23);
-    tree.insert(30);
-    tree.insert(20);
-    tree.insert(27);
-    tree.insert(31);
-    tree.insert(28);
+    use super::*;
+
+    fn create_tree() -> Tree {
+        let mut tree = Tree::new();
+
+        tree.insert(2);
+        tree.insert(1);
+        tree.insert(3);
+
+        tree
+    }
+
+    #[test]
+    fn smoke() {
+        let mut tree = Tree::new();
+
+        tree.insert(5);
+        tree.insert(2);
+        tree.insert(8);
+        tree.insert(3);
+        tree.insert(1);
+        tree.insert(23);
+        tree.insert(30);
+        tree.insert(20);
+        tree.insert(27);
+        tree.insert(31);
+        tree.insert(28);
 
     /*
             5
@@ -217,42 +235,101 @@ fn main() {
                   \
                    28
     */
-    tree.traverse();
 
-    println!("{}", tree.contains(10));
+        let expected = expect!["1 2 3 5 8 20 23 27 28 30 31 "];
+        expected.assert_eq(&tree.traverse());
 
-    // println!("\nremoved: {}", tree.remove(8).unwrap());
-    // tree.traverse();
+        assert_eq!(tree.remove(23), Some(23));
+        let expected = expect!["1 2 3 5 8 20 27 28 30 31 "];
+        expected.assert_eq(&tree.traverse());
+        /*
+                5                   5
+               / \                 / \
+              2   8               2   8
+             / \   \             / \   \
+            1   3   23          1   3   27
+                   /  \      ->        /  \
+                 20    30            20    30
+                      /  \                /  \
+                    27    31            28    31
+                      \
+                       28
+        */
 
-    println!("\nremoved: {}", tree.remove(23).unwrap());
-    tree.traverse();
-    /*
-            5                   5
-           / \                 / \
-          2   8               2   8
-         / \   \             / \   \
-        1   3   23          1   3   27
-               /  \      ->        /  \
-             20    30            20    30
-                  /  \                /  \
-                27    31            28    31
-                  \
-                   28
-    */
-    // dbg!(&tree);
+        assert_eq!(tree.remove(5), Some(5));
+        let expected = expect!["1 2 3 8 20 27 28 30 31 "];
+        expected.assert_eq(&tree.traverse());
+        /*
+                5                   8
+               / \                 / \
+              2   8               2   \
+             / \   \             / \   \
+            1   3   27          1   3   27
+                   /  \      ->        /  \
+                 20    30            20    30
+                      /  \                /  \
+                    28    31            28    31
+        */
+    }
 
-    println!("\nremoved: {}", tree.remove(5).unwrap());
-    tree.traverse();
-    /*
-            5                   8
-           / \                 / \
-          2   8               2   27
-         / \   \             / \   \
-        1   3   27          1   3   |\
-               /  \      ->        /  \
-             20    30            20    30
-                  /  \                /  \
-                28    31            28    31
-    */
-    // dbg!(tree);
+    #[test]
+    fn test_insert() {
+        let mut tree = Tree::new();
+
+        tree.insert(10);
+        tree.insert(5);
+        tree.insert(6);
+        tree.insert(3);
+        tree.insert(12);
+        tree.insert(11);
+
+        let expected = expect!["3 5 6 10 11 12 "];
+        expected.assert_eq(&tree.traverse());
+    }
+
+    #[test]
+    fn test_remove_root() {
+        let mut tree = create_tree();
+
+        assert_eq!(tree.remove(2), Some(2));
+
+        let expected = expect!["1 3 "];
+        expected.assert_eq(&tree.traverse());
+    }
+
+    #[test]
+    fn remove_no_child() {
+        let mut tree = create_tree();
+
+        assert_eq!(tree.remove(1), Some(1));
+
+        let expected = expect!["2 3 "];
+        expected.assert_eq(&tree.traverse());
+    }
+
+    #[test]
+    fn remove_one_child() {
+        let mut tree = create_tree();
+
+        tree.insert(4);
+
+        assert_eq!(tree.remove(3), Some(3));
+
+        let expected = expect!["1 2 4 "];
+        expected.assert_eq(&tree.traverse());
+    }
+
+    #[test]
+    fn remove_two_child() {
+        let mut tree = create_tree();
+
+        tree.insert(5);
+        tree.insert(4);
+        tree.insert(6);
+
+        assert_eq!(tree.remove(5), Some(5));
+
+        let expected = expect!["1 2 3 4 6 "];
+        expected.assert_eq(&tree.traverse());
+    }
 }
